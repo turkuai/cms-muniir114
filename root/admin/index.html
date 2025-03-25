@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CMS Admin</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .admin-section {
+            background-color: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .admin-section h2 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        .admin-input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .save-button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .save-button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Admin Panel</h1>
+
+    <!-- Logo Edit Section -->
+    <div class="admin-section">
+        <h2>Edit Logo URL</h2>
+        <input id="logo-url" class="admin-input" type="text" placeholder="Enter logo URL">
+        <button type="button" onclick="updateLogo()">Update Logo</button>
+    </div>
+
+    <!-- Footer Note Edit Section -->
+    <div class="admin-section">
+        <h2>Edit Footer Note</h2>
+        <textarea id="footer-note" class="admin-input" placeholder="Enter footer note"></textarea>
+    </div>
+
+    <!-- Social Media Links Edit Section -->
+    <div class="admin-section">
+        <h2>Edit Social Media Links</h2>
+        <label for="facebook-link">Facebook URL:</label>
+        <input type="text" id="facebook-link" class="admin-input" placeholder="Enter new Facebook URL">
+
+        <label for="linkedin-link">LinkedIn URL:</label>
+        <input type="text" id="linkedin-link" class="admin-input" placeholder="Enter new LinkedIn URL">
+
+        <label for="github-link">GitHub URL:</label>
+        <input type="text" id="github-link" class="admin-input" placeholder="Enter new GitHub URL">
+        
+        <button type="button" onclick="updateSocialLinks()">Update Links</button>
+    </div>
+
+    <button class="save-button" onclick="saveChanges()">Save Changes</button>
+
+    <script>
+        // Initialize the app with data from localStorage
+        function loadData() {
+            const logoUrl = localStorage.getItem('logoUrl');
+            const footerNote = localStorage.getItem('footerNote');
+            const socialLinks = JSON.parse(localStorage.getItem('socialLinks')) || {};
+    
+            // Set the inputs with stored data
+            if (logoUrl) {
+                document.getElementById('logo-url').value = logoUrl;
+            }
+    
+            if (footerNote) {
+                document.getElementById('footer-note').value = footerNote;
+            }
+    
+            // Set social media links with stored values (if any)
+            if (socialLinks) {
+                document.getElementById('facebook-link').value = socialLinks.facebook || '';
+                document.getElementById('linkedin-link').value = socialLinks.linkedin || '';
+                document.getElementById('github-link').value = socialLinks.github || '';
+            }
+        }
+    
+        // Update only the changed social media links in localStorage
+        // Update the social media links in localStorage
+// Update the social media links in localStorage
+function updateSocialLinks() {
+    // Retrieve existing links or create a new object
+    let socialLinks = JSON.parse(localStorage.getItem('socialLinks')) || {};
+
+    // Get the current values for each social link
+    const facebookLink = document.getElementById('facebook-link').value;
+    const linkedinLink = document.getElementById('linkedin-link').value;
+    const githubLink = document.getElementById('github-link').value;
+
+    // Update all links
+    socialLinks.facebook = facebookLink;
+    socialLinks.linkedin = linkedinLink;
+    socialLinks.github = githubLink;
+
+    // Save the updated social links to localStorage
+    localStorage.setItem('socialLinks', JSON.stringify(socialLinks));
+
+    alert('Social Media Links updated!');
+}
+
+
+    
+        // Save other changes (like logo and footer note)
+        function saveChanges() {
+            const logoUrl = document.getElementById('logo-url').value;
+            const footerNote = document.getElementById('footer-note').value;
+    
+            localStorage.setItem('logoUrl', logoUrl);
+            localStorage.setItem('footerNote', footerNote);
+    
+            alert('Changes saved!');
+        }
+    
+        // Load the data on page load
+        window.onload = function() {
+            loadData();
+        }
+    </script>
+        
+    
+
+</body>
+</html>
