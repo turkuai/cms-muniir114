@@ -242,7 +242,7 @@
                     <input type="text" id="article-title" class="admin-input" placeholder="Article title">
                     <textarea id="article-content" class="admin-input" placeholder="Article content"></textarea>
                     <input type="text" id="article-image" class="admin-input" placeholder="Image URL">
-                    <button class="admin-button" onclick="addArticle()">Add Article</button>
+                    <button class="admin-button" id="article-submit-btn" onclick="addArticle()">Add Article</button>
                 </div>
                 <div>
                     <h3>Existing Articles</h3>
@@ -274,6 +274,9 @@
     </footer>
 
     <script>
+        // Track which article is being edited
+        let currentlyEditingIndex = null;
+
         // Load data from localStorage when the page loads
         function loadData() {
             const logoUrl = localStorage.getItem('logoUrl');
@@ -305,6 +308,7 @@
                 document.getElementById('company-email').value = companyInfo.email || '';
             }
         }
+        let currentlyEditingSocial = null;
 
         // Display Social Media Links
         function displaySocialMedia(socialLinks) {
@@ -341,26 +345,93 @@
         }
 
         // Add Social Media Link
-        function addSocialMedia() {
-            const socialName = document.getElementById('social-name').value.trim();
-            const socialUrl = document.getElementById('social-url').value.trim();
+       // Edit Social Media Link
+function editSocialMedia(name) {
+    let socialLinks = JSON.parse(localStorage.getItem('socialLinks')) || {};
+    const url = socialLinks[name];
+    
+    // Store which social media we're editing
+    currentlyEditingSocial = name;
+    
+    // Populate form fields
+    document.getElementById('social-name').value = name;
+    document.getElementById('social-url').value = url;
+    
+    // Change button to "Update Social Media"
+    const socialMediaBtn = document.querySelector('.admin-section:nth-child(3) .admin-button');
+    socialMediaBtn.textContent = 'Update Social Media';
+    socialMediaBtn.onclick = updateSocialMedia;
+}
 
-            if (!socialName || !socialUrl) {
-                alert('Please fill in both fields!');
-                return;
-            }
+// Update Social Media Link
+function updateSocialMedia() {
+    if (!currentlyEditingSocial) return;
+    
+    const newName = document.getElementById('social-name').value.trim();
+    const newUrl = document.getElementById('social-url').value.trim();
 
-            let socialLinks = JSON.parse(localStorage.getItem('socialLinks')) || {};
-            socialLinks[socialName] = socialUrl;
-            localStorage.setItem('socialLinks', JSON.stringify(socialLinks));
+    if (!newName || !newUrl) {
+        alert('Please fill in both fields!');
+        return;
+    }
 
-            // Clear inputs
-            document.getElementById('social-name').value = '';
-            document.getElementById('social-url').value = '';
+    let socialLinks = JSON.parse(localStorage.getItem('socialLinks')) || {};
+    
+    // Remove the old entry if the name changed
+    if (newName !== currentlyEditingSocial) {
+        delete socialLinks[currentlyEditingSocial];
+    }
+    
+    // Add/update the social media link
+    socialLinks[newName] = newUrl;
+    localStorage.setItem('socialLinks', JSON.stringify(socialLinks));
 
-            displaySocialMedia(socialLinks);
-            alert('Social Media Link added!');
+    // Clear inputs
+    document.getElementById('social-name').value = '';
+    document.getElementById('social-url').value = '';
+    
+    // Reset button to "Add Social Media"
+    const socialMediaBtn = document.querySelector('.admin-section:nth-child(3) .admin-button');
+    socialMediaBtn.textContent = 'Add Social Media';
+    socialMediaBtn.onclick = addSocialMedia;
+    
+    // Reset editing state
+    currentlyEditingSocial = null;
+    
+    displaySocialMedia(socialLinks);
+    alert('Social Media Link updated!');
+}
+
+// Add Social Media Link
+function addSocialMedia() {
+    const socialName = document.getElementById('social-name').value.trim();
+    const socialUrl = document.getElementById('social-url').value.trim();
+
+    if (!socialName || !socialUrl) {
+        alert('Please fill in both fields!');
+        return;
+    }
+
+    let socialLinks = JSON.parse(localStorage.getItem('socialLinks')) || {};
+    
+    // Check if we're editing (shouldn't happen, but just in case)
+    if (currentlyEditingSocial) {
+        if (socialName !== currentlyEditingSocial) {
+            delete socialLinks[currentlyEditingSocial];
         }
+        currentlyEditingSocial = null;
+    }
+    
+    socialLinks[socialName] = socialUrl;
+    localStorage.setItem('socialLinks', JSON.stringify(socialLinks));
+
+    // Clear inputs
+    document.getElementById('social-name').value = '';
+    document.getElementById('social-url').value = '';
+
+    displaySocialMedia(socialLinks);
+    alert('Social Media Link added!');
+}
 
         // Display Articles
         function displayArticles(articles) {
@@ -415,23 +486,40 @@
             let articles = JSON.parse(localStorage.getItem('articles')) || [];
             const article = articles[index];
             
+            // Store the index we're editing
+            currentlyEditingIndex = index;
+            
+            // Populate form fields
             document.getElementById('article-title').value = article.title;
             document.getElementById('article-content').value = article.content;
             document.getElementById('article-image').value = article.image || '';
             
-            const addButton = document.querySelector('.admin-section.article-container .admin-button');
-            addButton.textContent = 'Update Article';
-            addButton.onclick = function() { updateArticle(index); };
+            // Change button to "Update Article"
+            const submitBtn = document.getElementById('article-submit-btn');
+            submitBtn.textContent = 'Update Article';
+            submitBtn.onclick = function() { updateArticle(); };
         }
 
         // Update Article
-        function updateArticle(index) {
+        function updateArticle() {
+            if (currentlyEditingIndex === null) return;
+            
+            const title = document.getElementById('article-title').value.trim();
+            const content = document.getElementById('article-content').value.trim();
+            const image = document.getElementById('article-image').value.trim();
+
+            if (!title || !content) {
+                alert('Title and content are required!');
+                return;
+            }
+
             let articles = JSON.parse(localStorage.getItem('articles')) || [];
             
-            articles[index] = {
-                title: document.getElementById('article-title').value.trim(),
-                content: document.getElementById('article-content').value.trim(),
-                image: document.getElementById('article-image').value.trim()
+            // Update the existing article
+            articles[currentlyEditingIndex] = {
+                title: title,
+                content: content,
+                image: image
             };
             
             localStorage.setItem('articles', JSON.stringify(articles));
@@ -441,9 +529,13 @@
             document.getElementById('article-content').value = '';
             document.getElementById('article-image').value = '';
             
-            const addButton = document.querySelector('.admin-section.article-container .admin-button');
-            addButton.textContent = 'Add Article';
-            addButton.onclick = addArticle;
+            // Reset button to "Add Article"
+            const submitBtn = document.getElementById('article-submit-btn');
+            submitBtn.textContent = 'Add Article';
+            submitBtn.onclick = addArticle;
+            
+            // Reset editing index
+            currentlyEditingIndex = null;
             
             displayArticles(articles);
             alert('Article updated!');
