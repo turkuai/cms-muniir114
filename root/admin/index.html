@@ -1,281 +1,498 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CMS Admin</title>
+    <title>CMS Admin Panel</title>
     <style>
-        /* Reset and Base Styles */
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --success-color: #2ecc71;
+            --danger-color: #e74c3c;
+            --warning-color: #f39c12;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --border-radius: 0.375rem;
+            --box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s ease;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
-            background-color: #f5f5f5;
-            color: #333;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
+            color: #212529;
+            background-color: #f5f7fa;
         }
 
-        /* Header Styles */
+        /* Admin Header */
         .admin-header {
-            background-color: #2c3e50;
+            background-color: var(--secondary-color);
             color: white;
             padding: 1rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            box-shadow: var(--box-shadow);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1030;
         }
 
         .admin-header h1 {
             font-size: 1.5rem;
             font-weight: 500;
+            display: flex;
+            align-items: center;
         }
 
-        /* Navigation Styles */
+        .admin-header h1 i {
+            margin-right: 0.75rem;
+            font-size: 1.25rem;
+        }
+
+        /* Sidebar Navigation */
+        .admin-sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 250px;
+            height: 100vh;
+            background-color: white;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            padding-top: 70px;
+            transform: translateX(-100%);
+            transition: var(--transition);
+            z-index: 1020;
+        }
+
+        .admin-sidebar.active {
+            transform: translateX(0);
+        }
+
         .admin-nav {
-            display: flex;
-            gap: 1.5rem;
+            list-style: none;
+            padding: 1rem 0;
+        }
+
+        .admin-nav li {
+            margin-bottom: 0.5rem;
         }
 
         .admin-nav a {
-            color: white;
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            color: var(--dark-color);
             text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s;
+            transition: var(--transition);
         }
 
-        .admin-nav a:hover {
-            color: #3498db;
+        .admin-nav a:hover,
+        .admin-nav a.active {
+            background-color: rgba(52, 152, 219, 0.1);
+            color: var(--primary-color);
         }
 
-        /* Main Content Styles */
+        .admin-nav i {
+            margin-right: 0.75rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Main Content */
         .admin-main {
-            max-width: 1200px;
-            margin: 2rem auto;
-            padding: 0 2rem;
+            margin-left: 0;
+            padding: 90px 20px 20px;
+            transition: var(--transition);
         }
 
-        /* Section Styles */
-        .admin-section {
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            padding: 2rem;
+        .admin-main.active {
+            margin-left: 250px;
+        }
+
+        /* Dashboard Cards */
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
             margin-bottom: 2rem;
         }
 
-        .admin-section h2 {
+        .card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175);
+        }
+
+        .card-header {
+            padding: 1.25rem 1.5rem;
+            background-color: rgba(0, 0, 0, 0.03);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-header h3 {
+            margin: 0;
             font-size: 1.25rem;
-            color: #2c3e50;
-            margin-bottom: 1.5rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 1px solid #eee;
+            color: var(--secondary-color);
+        }
+
+        .card-body {
+            padding: 1.5rem;
         }
 
         /* Form Styles */
-        .admin-input {
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--secondary-color);
+        }
+
+        .form-control {
+            display: block;
             width: 100%;
             padding: 0.75rem;
-            margin-bottom: 1rem;
-            border: 1px solid #ddd;
-            border-radius: 4px;
             font-size: 1rem;
-            transition: border-color 0.3s;
+            line-height: 1.5;
+            color: #495057;
+            background-color: #fff;
+            background-clip: padding-box;
+            border: 1px solid #ced4da;
+            border-radius: var(--border-radius);
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
         }
 
-        .admin-input:focus {
-            outline: none;
-            border-color: #3498db;
+        .form-control:focus {
+            color: #495057;
+            background-color: #fff;
+            border-color: #80bdff;
+            outline: 0;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
         }
 
-        textarea.admin-input {
+        textarea.form-control {
             min-height: 120px;
             resize: vertical;
         }
 
         /* Button Styles */
-        .admin-button {
-            background-color: #3498db;
-            color: white;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 500;
-            transition: background-color 0.3s;
-        }
-
-        .admin-button:hover {
-            background-color: #2980b9;
-        }
-
-        .btn-remove {
-            background-color: #e74c3c;
-            margin-left: 0.5rem;
-        }
-
-        .btn-remove:hover {
-            background-color: #c0392b;
-        }
-
-        .btn-edit {
-            background-color: #f39c12;
-            margin-left: 0.5rem;
-        }
-
-        .btn-edit:hover {
-            background-color: #d35400;
-        }
-
-        /* Article Styles */
-        .article-item {
-            background-color: #f9f9f9;
-            padding: 1.5rem;
-            border-radius: 6px;
-            margin-bottom: 1rem;
-            border-left: 4px solid #3498db;
-        }
-
-        .article-item h3 {
-            margin-bottom: 0.5rem;
-            color: #2c3e50;
-        }
-
-        .article-item img {
-            max-width: 100px;
-            margin-top: 0.5rem;
-            border-radius: 4px;
-        }
-
-        /* Footer Styles */
-        .admin-footer {
-            background-color: #2c3e50;
-            color: white;
-            padding: 2rem;
+        .btn {
+            display: inline-block;
+            font-weight: 400;
             text-align: center;
-            margin-top: 2rem;
+            white-space: nowrap;
+            vertical-align: middle;
+            user-select: none;
+            border: 1px solid transparent;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            cursor: pointer;
         }
 
-        .admin-footer p {
-            margin-bottom: 0.5rem;
+        .btn-primary {
+            color: #fff;
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
         }
 
-        .admin-footer a {
-            color: #3498db;
-            text-decoration: none;
+        .btn-primary:hover {
+            background-color: #2980b9;
+            border-color: #2980b9;
         }
 
-        /* Grid Layout */
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
+        .btn-success {
+            color: #fff;
+            background-color: var(--success-color);
+            border-color: var(--success-color);
+        }
+
+        .btn-success:hover {
+            background-color: #27ae60;
+            border-color: #27ae60;
+        }
+
+        .btn-danger {
+            color: #fff;
+            background-color: var(--danger-color);
+            border-color: var(--danger-color);
+        }
+
+        .btn-danger:hover {
+            background-color: #c0392b;
+            border-color: #c0392b;
+        }
+
+        .btn-warning {
+            color: #212529;
+            background-color: var(--warning-color);
+            border-color: var(--warning-color);
+        }
+
+        .btn-warning:hover {
+            background-color: #e67e22;
+            border-color: #e67e22;
+        }
+
+        /* Table Styles */
+        .table {
+            width: 100%;
+            margin-bottom: 1rem;
+            color: #212529;
+            border-collapse: collapse;
+        }
+
+        .table th,
+        .table td {
+            padding: 0.75rem;
+            vertical-align: top;
+            border-top: 1px solid #dee2e6;
+        }
+
+        .table thead th {
+            vertical-align: bottom;
+            border-bottom: 2px solid #dee2e6;
+            background-color: rgba(0, 0, 0, 0.03);
+            color: var(--secondary-color);
+        }
+
+        .table tbody tr:nth-of-type(odd) {
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+
+        .table tbody tr:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        /* Alert Styles */
+        .alert {
+            position: relative;
+            padding: 0.75rem 1.25rem;
+            margin-bottom: 1rem;
+            border: 1px solid transparent;
+            border-radius: var(--border-radius);
+        }
+
+        .alert-success {
+            color: #155724;
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+        }
+
+        /* Toggle Button */
+        .sidebar-toggle {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            display: none;
         }
 
         /* Responsive Adjustments */
-        @media (max-width: 768px) {
-            .admin-header {
-                flex-direction: column;
-                text-align: center;
-                gap: 1rem;
+        @media (max-width: 992px) {
+            .admin-sidebar {
+                transform: translateX(-100%);
             }
+            .admin-sidebar.active {
+                transform: translateX(0);
+            }
+            .admin-main {
+                margin-left: 0;
+            }
+            .admin-main.active {
+                margin-left: 0;
+            }
+            .sidebar-toggle {
+                display: block;
+            }
+        }
 
-            .admin-nav {
-                justify-content: center;
-            }
+        /* Font Awesome Icons (fallback) */
+        i {
+            font-style: normal;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
     </style>
 </head>
-
 <body>
+    <!-- Admin Header -->
     <header class="admin-header">
-        <h1>CMS Admin Panel</h1>
-        <nav class="admin-nav">
-            <a href="#home">Home</a>
-            <a href="#about">About</a>
-            <a href="#blog">Blog</a>
+        <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+        <h1><i>📊</i> CMS Admin Panel</h1>
+        <nav>
+            <a href="#" style="color: white; text-decoration: none;">Logout</a>
         </nav>
     </header>
 
+    <!-- Sidebar Navigation -->
+    <aside class="admin-sidebar">
+        <ul class="admin-nav">
+            <li><a href="#dashboard" class="active"><i>📊</i> Dashboard</a></li>
+            <li><a href="#logo"><i>🖼️</i> Logo Settings</a></li>
+            <li><a href="#footer"><i>📝</i> Footer Content</a></li>
+            <li><a href="#social"><i>🔗</i> Social Media</a></li>
+            <li><a href="#articles"><i>📰</i> Articles</a></li>
+            <li><a href="#company"><i>🏢</i> Company Info</a></li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
     <main class="admin-main">
-        <!-- Logo Edit Section -->
-        <section class="admin-section">
-            <h2>Edit Logo URL</h2>
-            <input id="logo-url" class="admin-input" type="text" placeholder="Enter logo URL">
-            <button type="button" class="admin-button" onclick="updateLogo()">Update Logo</button>
-        </section>
-
-        <!-- Footer Note Edit Section -->
-        <section class="admin-section">
-            <h2>Edit Footer Note</h2>
-            <textarea id="footer-note" class="admin-input" placeholder="Enter footer note"></textarea>
-            <button type="button" class="admin-button" onclick="saveFooterNote()">Save Footer Note</button>
-        </section>
-
-        <!-- Social Media Links Edit Section -->
-        <section class="admin-section">
-            <h2>Edit Social Media Links</h2>
-            <div class="form-grid">
-                <div>
-                    <input type="text" id="social-name" class="admin-input" placeholder="Social media name (e.g. Facebook)">
-                    <input type="text" id="social-url" class="admin-input" placeholder="Social media URL">
-                    <button type="button" class="admin-button" onclick="addSocialMedia()">Add Social Media</button>
+        <div class="dashboard-cards">
+            <!-- Logo Settings Card -->
+            <div class="card" id="logo-card">
+                <div class="card-header">
+                    <h3><i>🖼️</i> Logo Settings</h3>
                 </div>
-                <div>
-                    <h3>Existing Social Media Links</h3>
-                    <div id="social-media-list"></div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="logo-url" class="form-label">Logo URL</label>
+                        <input type="text" id="logo-url" class="form-control" placeholder="Enter logo URL">
+                    </div>
+                    <button type="button" class="btn btn-primary" onclick="updateLogo()">Update Logo</button>
                 </div>
             </div>
-        </section>
 
-        <!-- Articles Section -->
-        <section class="admin-section">
-            <h2>Edit Articles</h2>
-            <div class="form-grid">
-                <div>
-                    <input type="text" id="article-title" class="admin-input" placeholder="Article title">
-                    <textarea id="article-content" class="admin-input" placeholder="Article content"></textarea>
-                    <input type="text" id="article-image" class="admin-input" placeholder="Image URL">
-                    <button class="admin-button" id="article-submit-btn" onclick="addArticle()">Add Article</button>
+            <!-- Footer Content Card -->
+            <div class="card" id="footer-card">
+                <div class="card-header">
+                    <h3><i>📝</i> Footer Content</h3>
                 </div>
-                <div>
-                    <h3>Existing Articles</h3>
-                    <div id="article-list"></div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="footer-note" class="form-label">Footer Note</label>
+                        <textarea id="footer-note" class="form-control" placeholder="Enter footer note"></textarea>
+                    </div>
+                    <button type="button" class="btn btn-primary" onclick="saveFooterNote()">Save Footer Note</button>
                 </div>
             </div>
-        </section>
+        </div>
 
-        <!-- Company Info Edit Section -->
-        <section class="admin-section">
-            <h2>Edit Company Info</h2>
-            <div class="form-grid">
-                <div>
-                    <input id="company-name" class="admin-input" type="text" placeholder="Company Name">
-                    <input id="company-address" class="admin-input" type="text" placeholder="Company Address">
-                </div>
-                <div>
-                    <input id="company-phone" class="admin-input" type="text" placeholder="Phone Number">
-                    <input id="company-email" class="admin-input" type="text" placeholder="Email">
+        <!-- Social Media Card -->
+        <div class="card mb-4" id="social-card">
+            <div class="card-header">
+                <h3><i>🔗</i> Social Media Links</h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="social-name" class="form-label">Social Media Name</label>
+                            <input type="text" id="social-name" class="form-control" placeholder="e.g. Facebook">
+                        </div>
+                        <div class="form-group">
+                            <label for="social-url" class="form-label">Profile URL</label>
+                            <input type="text" id="social-url" class="form-control" placeholder="https://...">
+                        </div>
+                        <button type="button" class="btn btn-success" id="social-submit-btn" onclick="addSocialMedia()">Add Social Media</button>
+                    </div>
+                    <div class="col-md-6">
+                        <h4>Existing Links</h4>
+                        <div id="social-media-list" class="mt-3"></div>
+                    </div>
                 </div>
             </div>
-            <button class="admin-button" onclick="saveCompanyInfo()" style="margin-top: 1rem;">Save Company Info</button>
-        </section>
+        </div>
+
+        <!-- Articles Card -->
+        <div class="card mb-4" id="articles-card">
+            <div class="card-header">
+                <h3><i>📰</i> Articles Management</h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="article-title" class="form-label">Article Title</label>
+                            <input type="text" id="article-title" class="form-control" placeholder="Enter title">
+                        </div>
+                        <div class="form-group">
+                            <label for="article-content" class="form-label">Content</label>
+                            <textarea id="article-content" class="form-control" placeholder="Enter content"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="article-image" class="form-label">Image URL</label>
+                            <input type="text" id="article-image" class="form-control" placeholder="Enter image URL">
+                        </div>
+                        <button type="button" class="btn btn-success" id="article-submit-btn" onclick="addArticle()">Add Article</button>
+                    </div>
+                    <div class="col-md-6">
+                        <h4>Existing Articles</h4>
+                        <div id="article-list" class="mt-3"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Company Info Card -->
+        <div class="card" id="company-card">
+            <div class="card-header">
+                <h3><i>🏢</i> Company Information</h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="company-name" class="form-label">Company Name</label>
+                            <input type="text" id="company-name" class="form-control" placeholder="Company Name">
+                        </div>
+                        <div class="form-group">
+                            <label for="company-address" class="form-label">Address</label>
+                            <input type="text" id="company-address" class="form-control" placeholder="Company Address">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="company-phone" class="form-label">Phone Number</label>
+                            <input type="text" id="company-phone" class="form-control" placeholder="Phone Number">
+                        </div>
+                        <div class="form-group">
+                            <label for="company-email" class="form-label">Email</label>
+                            <input type="text" id="company-email" class="form-control" placeholder="Email">
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-primary" onclick="saveCompanyInfo()">Save Company Info</button>
+            </div>
+        </div>
     </main>
 
-    <footer class="admin-footer">
-        <p>© 2024, Company's Name, All rights reserved.</p>
-        <p>CMS Admin Panel</p>
-    </footer>
-
     <script>
-        // Track which article is being edited
+        // Track which article/social media is being edited
         let currentlyEditingIndex = null;
+        let currentlyEditingSocial = null;
+
+        // Toggle sidebar on mobile
+        function toggleSidebar() {
+            document.querySelector('.admin-sidebar').classList.toggle('active');
+            document.querySelector('.admin-main').classList.toggle('active');
+        }
 
         // Load data from localStorage when the page loads
         function loadData() {
@@ -285,175 +502,182 @@
             const articles = JSON.parse(localStorage.getItem('articles')) || [];
             const companyInfo = JSON.parse(localStorage.getItem('companyInfo')) || {};
 
-            if (logoUrl) {
-                document.getElementById('logo-url').value = logoUrl;
-            }
-
-            if (footerNote) {
-                document.getElementById('footer-note').value = footerNote;
-            }
-
-            if (socialLinks) {
-                displaySocialMedia(socialLinks);
-            }
-
-            if (articles) {
-                displayArticles(articles);
-            }
-
+            if (logoUrl) document.getElementById('logo-url').value = logoUrl;
+            if (footerNote) document.getElementById('footer-note').value = footerNote;
+            
             if (companyInfo.name) {
                 document.getElementById('company-name').value = companyInfo.name;
                 document.getElementById('company-address').value = companyInfo.address || '';
                 document.getElementById('company-phone').value = companyInfo.phone || '';
                 document.getElementById('company-email').value = companyInfo.email || '';
             }
+
+            displaySocialMedia(socialLinks);
+            displayArticles(articles);
         }
-        let currentlyEditingSocial = null;
 
         // Display Social Media Links
         function displaySocialMedia(socialLinks) {
-            const socialListContainer = document.getElementById('social-media-list');
-            socialListContainer.innerHTML = '';
+            const container = document.getElementById('social-media-list');
+            container.innerHTML = '';
             
             if (Object.keys(socialLinks).length === 0) {
-                socialListContainer.innerHTML = '<p>No social media links added yet.</p>';
+                container.innerHTML = '<div class="alert alert-info">No social media links added yet.</div>';
                 return;
             }
             
+            const table = document.createElement('table');
+            table.className = 'table';
+            table.innerHTML = `
+                <thead>
+                    <tr>
+                        <th>Platform</th>
+                        <th>URL</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="social-media-rows"></tbody>
+            `;
+            
+            container.appendChild(table);
+            const tbody = document.getElementById('social-media-rows');
+            
             for (const [name, url] of Object.entries(socialLinks)) {
-                const div = document.createElement('div');
-                div.style.marginBottom = '0.5rem';
-                div.style.padding = '0.5rem';
-                div.style.backgroundColor = '#f5f5f5';
-                div.style.borderRadius = '4px';
-                div.innerHTML = `
-                    <strong>${name}</strong>: <a href="${url}" target="_blank">${url}</a>
-                    <button class="admin-button btn-edit" onclick="editSocialMedia('${name}')">Edit</button>
-                    <button class="admin-button btn-remove" onclick="removeSocialMedia('${name}')">Remove</button>
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${name}</td>
+                    <td><a href="${url}" target="_blank">${url}</a></td>
+                    <td>
+                        <button class="btn btn-warning btn-sm" onclick="editSocialMedia('${name}')">Edit</button>
+                        <button class="btn btn-danger btn-sm" onclick="removeSocialMedia('${name}')">Delete</button>
+                    </td>
                 `;
-                socialListContainer.appendChild(div);
+                tbody.appendChild(row);
             }
+        }
+
+        // Edit Social Media Link
+        function editSocialMedia(name) {
+            const socialLinks = JSON.parse(localStorage.getItem('socialLinks')) || {};
+            const url = socialLinks[name];
+            
+            currentlyEditingSocial = name;
+            document.getElementById('social-name').value = name;
+            document.getElementById('social-url').value = url;
+            
+            const btn = document.getElementById('social-submit-btn');
+            btn.textContent = 'Update Social Media';
+            btn.onclick = updateSocialMedia;
+            btn.className = 'btn btn-warning';
+        }
+
+        // Update Social Media Link
+        function updateSocialMedia() {
+            if (!currentlyEditingSocial) return;
+            
+            const newName = document.getElementById('social-name').value.trim();
+            const newUrl = document.getElementById('social-url').value.trim();
+
+            if (!newName || !newUrl) {
+                alert('Please fill in both fields!');
+                return;
+            }
+
+            let socialLinks = JSON.parse(localStorage.getItem('socialLinks')) || {};
+            
+            // Remove old entry if name changed
+            if (newName !== currentlyEditingSocial) {
+                delete socialLinks[currentlyEditingSocial];
+            }
+            
+            socialLinks[newName] = newUrl;
+            localStorage.setItem('socialLinks', JSON.stringify(socialLinks));
+
+            // Reset form
+            document.getElementById('social-name').value = '';
+            document.getElementById('social-url').value = '';
+            
+            const btn = document.getElementById('social-submit-btn');
+            btn.textContent = 'Add Social Media';
+            btn.onclick = addSocialMedia;
+            btn.className = 'btn btn-success';
+            
+            currentlyEditingSocial = null;
+            displaySocialMedia(socialLinks);
+            showAlert('Social media link updated successfully!', 'success');
+        }
+
+        // Add Social Media Link
+        function addSocialMedia() {
+            const name = document.getElementById('social-name').value.trim();
+            const url = document.getElementById('social-url').value.trim();
+
+            if (!name || !url) {
+                alert('Please fill in both fields!');
+                return;
+            }
+
+            let socialLinks = JSON.parse(localStorage.getItem('socialLinks')) || {};
+            socialLinks[name] = url;
+            localStorage.setItem('socialLinks', JSON.stringify(socialLinks));
+
+            // Clear form
+            document.getElementById('social-name').value = '';
+            document.getElementById('social-url').value = '';
+            
+            displaySocialMedia(socialLinks);
+            showAlert('Social media link added successfully!', 'success');
         }
 
         // Remove Social Media Link
         function removeSocialMedia(name) {
+            if (!confirm(`Are you sure you want to delete ${name}?`)) return;
+            
             let socialLinks = JSON.parse(localStorage.getItem('socialLinks')) || {};
             delete socialLinks[name];
             localStorage.setItem('socialLinks', JSON.stringify(socialLinks));
+            
             displaySocialMedia(socialLinks);
-            alert(`${name} has been removed!`);
+            showAlert(`${name} has been removed!`, 'success');
         }
-
-        // Add Social Media Link
-       // Edit Social Media Link
-function editSocialMedia(name) {
-    let socialLinks = JSON.parse(localStorage.getItem('socialLinks')) || {};
-    const url = socialLinks[name];
-    
-    // Store which social media we're editing
-    currentlyEditingSocial = name;
-    
-    // Populate form fields
-    document.getElementById('social-name').value = name;
-    document.getElementById('social-url').value = url;
-    
-    // Change button to "Update Social Media"
-    const socialMediaBtn = document.querySelector('.admin-section:nth-child(3) .admin-button');
-    socialMediaBtn.textContent = 'Update Social Media';
-    socialMediaBtn.onclick = updateSocialMedia;
-}
-
-// Update Social Media Link
-function updateSocialMedia() {
-    if (!currentlyEditingSocial) return;
-    
-    const newName = document.getElementById('social-name').value.trim();
-    const newUrl = document.getElementById('social-url').value.trim();
-
-    if (!newName || !newUrl) {
-        alert('Please fill in both fields!');
-        return;
-    }
-
-    let socialLinks = JSON.parse(localStorage.getItem('socialLinks')) || {};
-    
-    // Remove the old entry if the name changed
-    if (newName !== currentlyEditingSocial) {
-        delete socialLinks[currentlyEditingSocial];
-    }
-    
-    // Add/update the social media link
-    socialLinks[newName] = newUrl;
-    localStorage.setItem('socialLinks', JSON.stringify(socialLinks));
-
-    // Clear inputs
-    document.getElementById('social-name').value = '';
-    document.getElementById('social-url').value = '';
-    
-    // Reset button to "Add Social Media"
-    const socialMediaBtn = document.querySelector('.admin-section:nth-child(3) .admin-button');
-    socialMediaBtn.textContent = 'Add Social Media';
-    socialMediaBtn.onclick = addSocialMedia;
-    
-    // Reset editing state
-    currentlyEditingSocial = null;
-    
-    displaySocialMedia(socialLinks);
-    alert('Social Media Link updated!');
-}
-
-// Add Social Media Link
-function addSocialMedia() {
-    const socialName = document.getElementById('social-name').value.trim();
-    const socialUrl = document.getElementById('social-url').value.trim();
-
-    if (!socialName || !socialUrl) {
-        alert('Please fill in both fields!');
-        return;
-    }
-
-    let socialLinks = JSON.parse(localStorage.getItem('socialLinks')) || {};
-    
-    // Check if we're editing (shouldn't happen, but just in case)
-    if (currentlyEditingSocial) {
-        if (socialName !== currentlyEditingSocial) {
-            delete socialLinks[currentlyEditingSocial];
-        }
-        currentlyEditingSocial = null;
-    }
-    
-    socialLinks[socialName] = socialUrl;
-    localStorage.setItem('socialLinks', JSON.stringify(socialLinks));
-
-    // Clear inputs
-    document.getElementById('social-name').value = '';
-    document.getElementById('social-url').value = '';
-
-    displaySocialMedia(socialLinks);
-    alert('Social Media Link added!');
-}
 
         // Display Articles
         function displayArticles(articles) {
-            const articleList = document.getElementById('article-list');
-            articleList.innerHTML = '';
+            const container = document.getElementById('article-list');
+            container.innerHTML = '';
 
             if (articles.length === 0) {
-                articleList.innerHTML = '<p>No articles added yet.</p>';
+                container.innerHTML = '<div class="alert alert-info">No articles added yet.</div>';
                 return;
             }
 
+            const table = document.createElement('table');
+            table.className = 'table';
+            table.innerHTML = `
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Preview</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="article-rows"></tbody>
+            `;
+            
+            container.appendChild(table);
+            const tbody = document.getElementById('article-rows');
+            
             articles.forEach((article, index) => {
-                const articleDiv = document.createElement('div');
-                articleDiv.className = 'article-item';
-                articleDiv.innerHTML = `
-                    <h3>${article.title}</h3>
-                    <p>${article.content.substring(0, 100)}...</p>
-                    ${article.image ? `<img src="${article.image}" alt="Article image">` : ''}
-                    <button class="admin-button btn-edit" onclick="editArticle(${index})">Edit</button>
-                    <button class="admin-button btn-remove" onclick="removeArticle(${index})">Remove</button>
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${article.title}</td>
+                    <td>${article.content.substring(0, 50)}...</td>
+                    <td>
+                        <button class="btn btn-warning btn-sm" onclick="editArticle(${index})">Edit</button>
+                        <button class="btn btn-danger btn-sm" onclick="removeArticle(${index})">Delete</button>
+                    </td>
                 `;
-                articleList.appendChild(articleDiv);
+                tbody.appendChild(row);
             });
         }
 
@@ -472,13 +696,13 @@ function addSocialMedia() {
             articles.push({ title, content, image });
             localStorage.setItem('articles', JSON.stringify(articles));
 
-            // Clear inputs
+            // Clear form
             document.getElementById('article-title').value = '';
             document.getElementById('article-content').value = '';
             document.getElementById('article-image').value = '';
-
+            
             displayArticles(articles);
-            alert('Article added!');
+            showAlert('Article added successfully!', 'success');
         }
 
         // Edit Article
@@ -486,18 +710,15 @@ function addSocialMedia() {
             let articles = JSON.parse(localStorage.getItem('articles')) || [];
             const article = articles[index];
             
-            // Store the index we're editing
             currentlyEditingIndex = index;
-            
-            // Populate form fields
             document.getElementById('article-title').value = article.title;
             document.getElementById('article-content').value = article.content;
             document.getElementById('article-image').value = article.image || '';
             
-            // Change button to "Update Article"
-            const submitBtn = document.getElementById('article-submit-btn');
-            submitBtn.textContent = 'Update Article';
-            submitBtn.onclick = function() { updateArticle(); };
+            const btn = document.getElementById('article-submit-btn');
+            btn.textContent = 'Update Article';
+            btn.onclick = updateArticle;
+            btn.className = 'btn btn-warning';
         }
 
         // Update Article
@@ -514,31 +735,22 @@ function addSocialMedia() {
             }
 
             let articles = JSON.parse(localStorage.getItem('articles')) || [];
-            
-            // Update the existing article
-            articles[currentlyEditingIndex] = {
-                title: title,
-                content: content,
-                image: image
-            };
-            
+            articles[currentlyEditingIndex] = { title, content, image };
             localStorage.setItem('articles', JSON.stringify(articles));
-            
-            // Reset form
+
+            // Clear form
             document.getElementById('article-title').value = '';
             document.getElementById('article-content').value = '';
             document.getElementById('article-image').value = '';
             
-            // Reset button to "Add Article"
-            const submitBtn = document.getElementById('article-submit-btn');
-            submitBtn.textContent = 'Add Article';
-            submitBtn.onclick = addArticle;
+            const btn = document.getElementById('article-submit-btn');
+            btn.textContent = 'Add Article';
+            btn.onclick = addArticle;
+            btn.className = 'btn btn-success';
             
-            // Reset editing index
             currentlyEditingIndex = null;
-            
             displayArticles(articles);
-            alert('Article updated!');
+            showAlert('Article updated successfully!', 'success');
         }
 
         // Remove Article
@@ -548,8 +760,23 @@ function addSocialMedia() {
             let articles = JSON.parse(localStorage.getItem('articles')) || [];
             articles.splice(index, 1);
             localStorage.setItem('articles', JSON.stringify(articles));
+            
             displayArticles(articles);
-            alert('Article removed!');
+            showAlert('Article removed successfully!', 'success');
+        }
+
+        // Update Logo
+        function updateLogo() {
+            const logoUrl = document.getElementById('logo-url').value.trim();
+            localStorage.setItem('logoUrl', logoUrl);
+            showAlert('Logo URL updated successfully!', 'success');
+        }
+
+        // Save Footer Note
+        function saveFooterNote() {
+            const footerNote = document.getElementById('footer-note').value.trim();
+            localStorage.setItem('footerNote', footerNote);
+            showAlert('Footer note saved successfully!', 'success');
         }
 
         // Save Company Info
@@ -562,26 +789,21 @@ function addSocialMedia() {
             };
             
             localStorage.setItem('companyInfo', JSON.stringify(companyInfo));
-            alert('Company information saved!');
+            showAlert('Company information saved successfully!', 'success');
+        }
+
+        // Show alert message
+        function showAlert(message, type) {
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
             
-            // Update footer year and name
-            const year = new Date().getFullYear();
-            document.querySelector('.admin-footer p').textContent = 
-                `© ${year}, ${companyInfo.name || 'Company Name'}, All rights reserved.`;
-        }
-
-        // Save Footer Note
-        function saveFooterNote() {
-            const footerNote = document.getElementById('footer-note').value.trim();
-            localStorage.setItem('footerNote', footerNote);
-            alert('Footer note saved!');
-        }
-
-        // Update Logo
-        function updateLogo() {
-            const logoUrl = document.getElementById('logo-url').value.trim();
-            localStorage.setItem('logoUrl', logoUrl);
-            alert('Logo URL updated!');
+            const header = document.querySelector('.admin-header');
+            header.insertAdjacentElement('afterend', alert);
+            
+            setTimeout(() => {
+                alert.remove();
+            }, 3000);
         }
 
         // Initialize the page
