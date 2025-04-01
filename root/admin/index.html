@@ -6,158 +6,272 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CMS Admin</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f8f9fa;
-            padding: 20px;
+        /* Reset and Base Styles */
+        * {
             margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        h1 {
-            text-align: center;
-            color: #343a40;
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
         }
 
-        .admin-section {
-            background-color: white;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 8px;
+        /* Header Styles */
+        .admin-header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
 
+        .admin-header h1 {
+            font-size: 1.5rem;
+            font-weight: 500;
+        }
+
+        /* Navigation Styles */
+        .admin-nav {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .admin-nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .admin-nav a:hover {
+            color: #3498db;
+        }
+
+        /* Main Content Styles */
+        .admin-main {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        /* Section Styles */
+        .admin-section {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .admin-section h2 {
+            font-size: 1.25rem;
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        /* Form Styles */
         .admin-input {
             width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
             font-size: 1rem;
+            transition: border-color 0.3s;
         }
 
-        .save-button {
-            background-color: #4CAF50;
+        .admin-input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        textarea.admin-input {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        /* Button Styles */
+        .admin-button {
+            background-color: #3498db;
             color: white;
             border: none;
-            padding: 10px 20px;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
             cursor: pointer;
-            border-radius: 5px;
             font-size: 1rem;
+            font-weight: 500;
+            transition: background-color 0.3s;
         }
 
-        .save-button:hover {
-            background-color: #45a049;
-        }
-
-        .article-section {
-            margin-bottom: 30px;
-        }
-
-        .article-list {
-            margin-bottom: 10px;
-        }
-
-        .article-item {
-            margin-bottom: 10px;
+        .admin-button:hover {
+            background-color: #2980b9;
         }
 
         .btn-remove {
-            background-color: #dc3545;
-            color: white;
-            border: none;
-            cursor: pointer;
-            padding: 5px 10px;
-            border-radius: 5px;
+            background-color: #e74c3c;
+            margin-left: 0.5rem;
         }
 
         .btn-remove:hover {
-            background-color: #c82333;
+            background-color: #c0392b;
         }
 
         .btn-edit {
-            background-color: #ffc107;
-            color: white;
-            border: none;
-            cursor: pointer;
-            padding: 5px 10px;
-            border-radius: 5px;
+            background-color: #f39c12;
+            margin-left: 0.5rem;
         }
 
         .btn-edit:hover {
-            background-color: #e0a800;
+            background-color: #d35400;
         }
 
-        .form-container {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
+        /* Article Styles */
+        .article-item {
+            background-color: #f9f9f9;
+            padding: 1.5rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            border-left: 4px solid #3498db;
         }
 
-        .social-media-container,
-        .article-container,
-        .company-info-container {
-            margin-top: 20px;
+        .article-item h3 {
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+        }
+
+        .article-item img {
+            max-width: 100px;
+            margin-top: 0.5rem;
+            border-radius: 4px;
+        }
+
+        /* Footer Styles */
+        .admin-footer {
+            background-color: #2c3e50;
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .admin-footer p {
+            margin-bottom: 0.5rem;
+        }
+
+        .admin-footer a {
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        /* Grid Layout */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .admin-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 1rem;
+            }
+
+            .admin-nav {
+                justify-content: center;
+            }
         }
     </style>
 </head>
 
 <body>
+    <header class="admin-header">
+        <h1>CMS Admin Panel</h1>
+        <nav class="admin-nav">
+            <a href="#home">Home</a>
+            <a href="#about">About</a>
+            <a href="#blog">Blog</a>
+        </nav>
+    </header>
 
-    <h1>Admin Panel</h1>
+    <main class="admin-main">
+        <!-- Logo Edit Section -->
+        <section class="admin-section">
+            <h2>Edit Logo URL</h2>
+            <input id="logo-url" class="admin-input" type="text" placeholder="Enter logo URL">
+            <button type="button" class="admin-button" onclick="updateLogo()">Update Logo</button>
+        </section>
 
-    <!-- Logo Edit Section -->
-    <div class="admin-section">
-        <h2>Edit Logo URL</h2>
-        <input id="logo-url" class="admin-input" type="text" placeholder="Enter logo URL">
-        <button type="button" class="save-button" onclick="updateLogo()">Update Logo</button>
-    </div>
+        <!-- Footer Note Edit Section -->
+        <section class="admin-section">
+            <h2>Edit Footer Note</h2>
+            <textarea id="footer-note" class="admin-input" placeholder="Enter footer note"></textarea>
+            <button type="button" class="admin-button" onclick="saveFooterNote()">Save Footer Note</button>
+        </section>
 
-    <!-- Footer Note Edit Section -->
-    <div class="admin-section">
-        <h2>Edit Footer Note</h2>
-        <textarea id="footer-note" class="admin-input" placeholder="Enter footer note"></textarea>
-    </div>
+        <!-- Social Media Links Edit Section -->
+        <section class="admin-section">
+            <h2>Edit Social Media Links</h2>
+            <div class="form-grid">
+                <div>
+                    <input type="text" id="social-name" class="admin-input" placeholder="Social media name (e.g. Facebook)">
+                    <input type="text" id="social-url" class="admin-input" placeholder="Social media URL">
+                    <button type="button" class="admin-button" onclick="addSocialMedia()">Add Social Media</button>
+                </div>
+                <div>
+                    <h3>Existing Social Media Links</h3>
+                    <div id="social-media-list"></div>
+                </div>
+            </div>
+        </section>
 
-    <!-- Social Media Links Edit Section -->
-    <div class="admin-section social-media-container">
-        <h2>Edit Social Media Links</h2>
-        <div class="form-container">
-            <input type="text" id="social-name" class="admin-input" placeholder="Enter social media name (e.g. Facebook)">
-            <input type="text" id="social-url" class="admin-input" placeholder="Enter social media URL">
-            <button type="button" class="save-button" onclick="addSocialMedia()">Add Social Media</button>
-        </div>
-        <!-- List of Social Media Links -->
-        <h3>Existing Social Media Links</h3>
-        <div id="social-media-list"></div>
-    </div>
+        <!-- Articles Section -->
+        <section class="admin-section">
+            <h2>Edit Articles</h2>
+            <div class="form-grid">
+                <div>
+                    <input type="text" id="article-title" class="admin-input" placeholder="Article title">
+                    <textarea id="article-content" class="admin-input" placeholder="Article content"></textarea>
+                    <input type="text" id="article-image" class="admin-input" placeholder="Image URL">
+                    <button class="admin-button" onclick="addArticle()">Add Article</button>
+                </div>
+                <div>
+                    <h3>Existing Articles</h3>
+                    <div id="article-list"></div>
+                </div>
+            </div>
+        </section>
 
-    <!-- Articles Section -->
-    <div class="admin-section article-container">
-        <h2>Edit Articles</h2>
-        <div class="form-container">
-            <input type="text" id="article-title" class="admin-input" placeholder="Enter article title">
-            <textarea id="article-content" class="admin-input" placeholder="Enter article content"></textarea>
-            <input type="text" id="article-image" class="admin-input" placeholder="Enter article image URL">
-            <button class="save-button" onclick="addArticle()">Add Article</button>
-        </div>
-        <h3>Existing Articles</h3>
-        <div id="article-list"></div>
-    </div>
+        <!-- Company Info Edit Section -->
+        <section class="admin-section">
+            <h2>Edit Company Info</h2>
+            <div class="form-grid">
+                <div>
+                    <input id="company-name" class="admin-input" type="text" placeholder="Company Name">
+                    <input id="company-address" class="admin-input" type="text" placeholder="Company Address">
+                </div>
+                <div>
+                    <input id="company-phone" class="admin-input" type="text" placeholder="Phone Number">
+                    <input id="company-email" class="admin-input" type="text" placeholder="Email">
+                </div>
+            </div>
+            <button class="admin-button" onclick="saveCompanyInfo()" style="margin-top: 1rem;">Save Company Info</button>
+        </section>
+    </main>
 
-    <!-- Company Info Edit Section -->
-    <div class="admin-section company-info-container">
-        <h2>Edit Company Info</h2>
-        <div class="form-container">
-            <input id="company-name" class="admin-input" type="text" placeholder="Company Name">
-            <input id="company-address" class="admin-input" type="text" placeholder="Company Address">
-            <input id="company-phone" class="admin-input" type="text" placeholder="Phone Number">
-            <input id="company-email" class="admin-input" type="text" placeholder="Email">
-            <button class="save-button" onclick="saveCompanyInfo()">Save Company Info</button>
-        </div>
-    </div>
-
-    <!-- Save Changes Button -->
-    <button class="save-button" onclick="saveChanges()">Save All Changes</button>
+    <footer class="admin-footer">
+        <p>© 2024, Company's Name, All rights reserved.</p>
+        <p>CMS Admin Panel</p>
+    </footer>
 
     <script>
         // Load data from localStorage when the page loads
@@ -166,6 +280,7 @@
             const footerNote = localStorage.getItem('footerNote');
             const socialLinks = JSON.parse(localStorage.getItem('socialLinks')) || {};
             const articles = JSON.parse(localStorage.getItem('articles')) || [];
+            const companyInfo = JSON.parse(localStorage.getItem('companyInfo')) || {};
 
             if (logoUrl) {
                 document.getElementById('logo-url').value = logoUrl;
@@ -182,36 +297,53 @@
             if (articles) {
                 displayArticles(articles);
             }
+
+            if (companyInfo.name) {
+                document.getElementById('company-name').value = companyInfo.name;
+                document.getElementById('company-address').value = companyInfo.address || '';
+                document.getElementById('company-phone').value = companyInfo.phone || '';
+                document.getElementById('company-email').value = companyInfo.email || '';
+            }
         }
 
         // Display Social Media Links
         function displaySocialMedia(socialLinks) {
             const socialListContainer = document.getElementById('social-media-list');
             socialListContainer.innerHTML = '';
-            Object.keys(socialLinks).forEach(name => {
-                const url = socialLinks[name];
+            
+            if (Object.keys(socialLinks).length === 0) {
+                socialListContainer.innerHTML = '<p>No social media links added yet.</p>';
+                return;
+            }
+            
+            for (const [name, url] of Object.entries(socialLinks)) {
                 const div = document.createElement('div');
-                div.innerHTML = ` 
-                    <p><strong>${name}</strong>: <a href="${url}" target="_blank">${url}</a> 
-                    <button class="btn-remove" onclick="removeSocialMedia('${name}')">Remove</button></p>
+                div.style.marginBottom = '0.5rem';
+                div.style.padding = '0.5rem';
+                div.style.backgroundColor = '#f5f5f5';
+                div.style.borderRadius = '4px';
+                div.innerHTML = `
+                    <strong>${name}</strong>: <a href="${url}" target="_blank">${url}</a>
+                    <button class="admin-button btn-edit" onclick="editSocialMedia('${name}')">Edit</button>
+                    <button class="admin-button btn-remove" onclick="removeSocialMedia('${name}')">Remove</button>
                 `;
                 socialListContainer.appendChild(div);
-            });
+            }
         }
 
         // Remove Social Media Link
         function removeSocialMedia(name) {
             let socialLinks = JSON.parse(localStorage.getItem('socialLinks')) || {};
-            delete socialLinks[name]; // Remove the selected social media link by name
-            localStorage.setItem('socialLinks', JSON.stringify(socialLinks)); // Save back to localStorage
-            displaySocialMedia(socialLinks); // Update the display
+            delete socialLinks[name];
+            localStorage.setItem('socialLinks', JSON.stringify(socialLinks));
+            displaySocialMedia(socialLinks);
             alert(`${name} has been removed!`);
         }
 
         // Add Social Media Link
         function addSocialMedia() {
-            const socialName = document.getElementById('social-name').value;
-            const socialUrl = document.getElementById('social-url').value;
+            const socialName = document.getElementById('social-name').value.trim();
+            const socialUrl = document.getElementById('social-url').value.trim();
 
             if (!socialName || !socialUrl) {
                 alert('Please fill in both fields!');
@@ -219,130 +351,149 @@
             }
 
             let socialLinks = JSON.parse(localStorage.getItem('socialLinks')) || {};
-            socialLinks[socialName] = socialUrl; // Add new social media link
-            localStorage.setItem('socialLinks', JSON.stringify(socialLinks)); // Save to localStorage
+            socialLinks[socialName] = socialUrl;
+            localStorage.setItem('socialLinks', JSON.stringify(socialLinks));
 
-            displaySocialMedia(socialLinks); // Update the display of social media links
+            // Clear inputs
+            document.getElementById('social-name').value = '';
+            document.getElementById('social-url').value = '';
+
+            displaySocialMedia(socialLinks);
             alert('Social Media Link added!');
         }
 
-        // Load and Display Articles
-        function loadArticles() {
-            const articles = JSON.parse(localStorage.getItem('articles')) || [];
+        // Display Articles
+        function displayArticles(articles) {
             const articleList = document.getElementById('article-list');
             articleList.innerHTML = '';
 
+            if (articles.length === 0) {
+                articleList.innerHTML = '<p>No articles added yet.</p>';
+                return;
+            }
+
             articles.forEach((article, index) => {
-                const div = document.createElement('div');
-                div.classList.add('article-item');
-                div.innerHTML = `
-                    <h4>${article.title}</h4>
-                    <p>${article.content}</p>
-                    <img src="${article.image}" style="max-width: 100px;">
-                    <button class="btn-edit" onclick="editArticle(${index})">Edit</button>
-                    <button class="btn-remove" onclick="removeArticle(${index})">Remove</button>
+                const articleDiv = document.createElement('div');
+                articleDiv.className = 'article-item';
+                articleDiv.innerHTML = `
+                    <h3>${article.title}</h3>
+                    <p>${article.content.substring(0, 100)}...</p>
+                    ${article.image ? `<img src="${article.image}" alt="Article image">` : ''}
+                    <button class="admin-button btn-edit" onclick="editArticle(${index})">Edit</button>
+                    <button class="admin-button btn-remove" onclick="removeArticle(${index})">Remove</button>
                 `;
-                articleList.appendChild(div);
+                articleList.appendChild(articleDiv);
             });
         }
 
-        // Add New Article
+        // Add Article
         function addArticle() {
-            const title = document.getElementById('article-title').value;
-            const content = document.getElementById('article-content').value;
-            const image = document.getElementById('article-image').value;
-            if (!title || !content || !image) return alert('Fill all fields!');
+            const title = document.getElementById('article-title').value.trim();
+            const content = document.getElementById('article-content').value.trim();
+            const image = document.getElementById('article-image').value.trim();
+
+            if (!title || !content) {
+                alert('Title and content are required!');
+                return;
+            }
 
             let articles = JSON.parse(localStorage.getItem('articles')) || [];
             articles.push({ title, content, image });
             localStorage.setItem('articles', JSON.stringify(articles));
-            loadArticles();
+
+            // Clear inputs
+            document.getElementById('article-title').value = '';
+            document.getElementById('article-content').value = '';
+            document.getElementById('article-image').value = '';
+
+            displayArticles(articles);
+            alert('Article added!');
         }
 
         // Edit Article
         function editArticle(index) {
             let articles = JSON.parse(localStorage.getItem('articles')) || [];
             const article = articles[index];
+            
             document.getElementById('article-title').value = article.title;
             document.getElementById('article-content').value = article.content;
-            document.getElementById('article-image').value = article.image;
-
-            document.querySelector('button[onclick="addArticle()"').innerText = 'Update Article';
-            document.querySelector('button[onclick="addArticle()"').setAttribute('onclick', `updateArticle(${index})`);
+            document.getElementById('article-image').value = article.image || '';
+            
+            const addButton = document.querySelector('.admin-section.article-container .admin-button');
+            addButton.textContent = 'Update Article';
+            addButton.onclick = function() { updateArticle(index); };
         }
 
         // Update Article
         function updateArticle(index) {
             let articles = JSON.parse(localStorage.getItem('articles')) || [];
+            
             articles[index] = {
-                title: document.getElementById('article-title').value,
-                content: document.getElementById('article-content').value,
-                image: document.getElementById('article-image').value
+                title: document.getElementById('article-title').value.trim(),
+                content: document.getElementById('article-content').value.trim(),
+                image: document.getElementById('article-image').value.trim()
             };
+            
             localStorage.setItem('articles', JSON.stringify(articles));
-            loadArticles();
-            document.querySelector('button[onclick^="updateArticle"]').innerText = 'Add Article';
-            document.querySelector('button[onclick^="updateArticle"]').setAttribute('onclick', 'addArticle()');
+            
+            // Reset form
+            document.getElementById('article-title').value = '';
+            document.getElementById('article-content').value = '';
+            document.getElementById('article-image').value = '';
+            
+            const addButton = document.querySelector('.admin-section.article-container .admin-button');
+            addButton.textContent = 'Add Article';
+            addButton.onclick = addArticle;
+            
+            displayArticles(articles);
+            alert('Article updated!');
         }
 
         // Remove Article
         function removeArticle(index) {
+            if (!confirm('Are you sure you want to delete this article?')) return;
+            
             let articles = JSON.parse(localStorage.getItem('articles')) || [];
             articles.splice(index, 1);
             localStorage.setItem('articles', JSON.stringify(articles));
-            loadArticles();
+            displayArticles(articles);
+            alert('Article removed!');
         }
 
-      // Save Company Info
-    function saveCompanyInfo() {
-        const name = document.getElementById('company-name').value;
-        const address = document.getElementById('company-address').value;
-        const phone = document.getElementById('company-phone').value;
-        const email = document.getElementById('company-email').value;
-
-        const companyInfo = { name, address, phone, email };
-        localStorage.setItem('companyInfo', JSON.stringify(companyInfo));
-        console.log("Company Info Saved:", companyInfo); // Debugging Log
-        alert('Company Info Updated!');
-    }
-
-    // Save all changes like logo and footer note
-    function saveChanges() {
-        const logoUrl = document.getElementById('logo-url').value;
-        const footerNote = document.getElementById('footer-note').value;
-
-        localStorage.setItem('logoUrl', logoUrl);
-        localStorage.setItem('footerNote', footerNote);
-
-        console.log("Logo and Footer Saved:", { logoUrl, footerNote }); // Debugging Log
-        alert('Changes saved!');
-    }
-
-    // Load data from localStorage when the page loads
-    window.onload = function () {
-        const logoUrl = localStorage.getItem('logoUrl');
-        const footerNote = localStorage.getItem('footerNote');
-        const companyInfo = JSON.parse(localStorage.getItem('companyInfo'));
-
-        if (logoUrl) {
-            document.getElementById('logo-url').value = logoUrl;
+        // Save Company Info
+        function saveCompanyInfo() {
+            const companyInfo = {
+                name: document.getElementById('company-name').value.trim(),
+                address: document.getElementById('company-address').value.trim(),
+                phone: document.getElementById('company-phone').value.trim(),
+                email: document.getElementById('company-email').value.trim()
+            };
+            
+            localStorage.setItem('companyInfo', JSON.stringify(companyInfo));
+            alert('Company information saved!');
+            
+            // Update footer year and name
+            const year = new Date().getFullYear();
+            document.querySelector('.admin-footer p').textContent = 
+                `© ${year}, ${companyInfo.name || 'Company Name'}, All rights reserved.`;
         }
 
-        if (footerNote) {
-            document.getElementById('footer-note').value = footerNote;
+        // Save Footer Note
+        function saveFooterNote() {
+            const footerNote = document.getElementById('footer-note').value.trim();
+            localStorage.setItem('footerNote', footerNote);
+            alert('Footer note saved!');
         }
 
-        if (companyInfo) {
-            document.getElementById('company-name').value = companyInfo.name;
-            document.getElementById('company-address').value = companyInfo.address;
-            document.getElementById('company-phone').value = companyInfo.phone;
-            document.getElementById('company-email').value = companyInfo.email;
+        // Update Logo
+        function updateLogo() {
+            const logoUrl = document.getElementById('logo-url').value.trim();
+            localStorage.setItem('logoUrl', logoUrl);
+            alert('Logo URL updated!');
         }
 
-        console.log("Loaded Data:", { logoUrl, footerNote, companyInfo }); // Debugging Log
-    
-        }
+        // Initialize the page
+        window.onload = loadData;
     </script>
 </body>
-
 </html>

@@ -1,4 +1,4 @@
-html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -69,47 +69,65 @@ html>
             margin-right: auto;
         }
 
-        article {
+        /* Articles Grid Container */
+        .articles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        /* Article Card Styling */
+        .article-card {
             background: white;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
             display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 20px;
+            flex-direction: column;
+            height: 100%;
         }
 
-        article h2 {
-            font-size: 2rem;
-            margin-bottom: 15px;
-            color: #333;
+        .article-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .article-image-container {
             width: 100%;
-        }
-
-        article .article-image {
-            flex: 1;
-            max-width: 45%;
-            border-radius: 8px;
+            height: 200px;
             overflow: hidden;
         }
 
-        article .article-image img {
+        .article-image-container img {
             width: 100%;
-            height: auto;
+            height: 100%;
             object-fit: cover;
+            transition: transform 0.5s ease;
         }
 
-        article .article-content {
-            flex: 1;
-            max-width: 50%;
+        .article-card:hover .article-image-container img {
+            transform: scale(1.05);
         }
 
-        article p {
-            font-size: 1rem;
-            color: #555;
+        .article-content {
+            padding: 20px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .article-title {
+            font-size: 1.5rem;
             margin-bottom: 15px;
+            color: #2c3e50;
+        }
+
+        .article-text {
+            color: #555;
+            margin-bottom: 20px;
+            flex-grow: 1;
         }
 
         /* Footer Styling */
@@ -190,35 +208,35 @@ html>
 
         /* Responsive Design */
         @media (max-width: 768px) {
-            article {
-                flex-direction: column;
-                align-items: center;
+            .articles-grid {
+                grid-template-columns: 1fr;
             }
-
-            article .article-image, article .article-content {
-                max-width: 90%;
-                flex: none;
-            }
-
+            
             footer {
                 flex-direction: column;
-                align-items: center;
+                gap: 20px;
             }
-
+            
             footer .company-info {
                 max-width: 100%;
-                text-align: center;
             }
-
+            
             footer nav {
-                justify-content: center;
-                gap: 40px;
+                justify-content: flex-start;
             }
+        }
+
+        /* No Articles Message */
+        .no-articles {
+            text-align: center;
+            padding: 40px;
+            background: white;
+            border-radius: 10px;
+            grid-column: 1 / -1;
         }
     </style>
 </head>
 <body>
-
     <!-- Header Section -->
     <header>
         <div class="logo">
@@ -233,121 +251,115 @@ html>
         </nav>
     </header>
 
-   
     <main>
         <!-- Container for dynamically added articles -->
-        <div id="articles"></div>
+        <div id="articles" class="articles-grid"></div>
     </main>
     
     <!-- Footer Section -->
-   <!-- Footer Section -->
-<footer>
-    <div class="company-info">
-        <p id="footer-note">SmartEco</p>
-        <p>SmartEco Ltd<br>Address: Pelltarinkatu 2D Turku<br>Phone: 0234562454<br>Email: SmartEco@Smart.fi.com</p>
-        <p>&copy; 2025 SmartEco  All rights reserved.</p>
-    </div>
+    <footer>
+        <div class="company-info">
+            <p id="footer-note">SmartEco</p>
+            <div id="company-info-details"></div>
+            <p id="copyright">&copy; 2025 SmartEco All rights reserved.</p>
+        </div>
 
-    <!-- Navigation links for Home, About, Blog -->
-    <nav>
-        <ul>
-            <li><a href="#home">HOME</a></li>
-            <li><a href="#about">ABOUT</a></li>
-            <li><a href="#blog">BLOG</a></li>
-        </ul>
-    </nav>
+        <!-- Navigation links for Home, About, Blog -->
+        <nav>
+            <ul>
+                <li><a href="#home">HOME</a></li>
+                <li><a href="#about">ABOUT</a></li>
+                <li><a href="#blog">BLOG</a></li>
+            </ul>
+        </nav>
 
-    <!-- Social Media Links -->
-    <nav>
-        <ul id="social-media-links">
-            <!-- Social media links will go here dynamically -->
-        </ul>
-    </nav>
-</footer>
+        <!-- Social Media Links -->
+        <nav>
+            <ul id="social-media-links"></ul>
+        </nav>
+    </footer>
 
-<script>
-    window.onload = function() {
-        const logoUrl = localStorage.getItem('logoUrl');
-        const footerNote = localStorage.getItem('footerNote');
-        if (footerNote) {
-            document.getElementById('footer-note').textContent = footerNote;
-        }
-        const socialLinks = JSON.parse(localStorage.getItem('socialLinks')) || {};
-        const articles = JSON.parse(localStorage.getItem('articles')) || [];
+    <script>
+        window.onload = function() {
+            // Load all data from localStorage
+            const logoUrl = localStorage.getItem('logoUrl');
+            const footerNote = localStorage.getItem('footerNote');
+            const socialLinks = JSON.parse(localStorage.getItem('socialLinks')) || {};
+            const articles = JSON.parse(localStorage.getItem('articles')) || [];
+            const companyInfo = JSON.parse(localStorage.getItem('companyInfo'));
 
-        // Update the logo image if a logo URL exists
-        if (logoUrl) {
-            document.getElementById('logoImage').src = logoUrl;
-        }
+            // Update logo
+            if (logoUrl) {
+                document.getElementById('logoImage').src = logoUrl;
+            }
 
-        // Update footer note
-        if (footerNote) {
-            document.getElementById('footer-note').textContent = footerNote;
-        }
+            // Update footer note
+            if (footerNote) {
+                document.getElementById('footer-note').textContent = footerNote;
+            }
 
-        // Populate social media links dynamically
-        const socialMediaContainer = document.getElementById('social-media-links');
-        socialMediaContainer.innerHTML = "";  // Clear existing links
-        for (let key in socialLinks) {
-            const li = document.createElement('li');
-            const anchor = document.createElement('a');
-            anchor.href = socialLinks[key];
-            anchor.textContent = key.charAt(0).toUpperCase() + key.slice(1);
-            li.appendChild(anchor);
-            socialMediaContainer.appendChild(li);
-        }
-
-        // Display articles dynamically
-        const articlesContainer = document.getElementById('articles');
-        articlesContainer.innerHTML = ""; // Clear existing articles
-        if (articles.length > 0) {
-            articles.forEach((article, index) => {
-                const articleElement = document.createElement('article');
-                articleElement.innerHTML = `
-                    <h2>${article.title}</h2>
-                    <div class="article-content">
-                        <p>${article.content}</p>
-                    </div>
-                    <div class="article-image">
-                        <img src="${article.image}" alt="${article.title}">
-                    </div>
-                    <button onclick="removeArticle(${index})"></button>
-                `;
-                articlesContainer.appendChild(articleElement);
-            });
-        } else {
-            articlesContainer.innerHTML = "<p>No articles available.</p>";
-        }
-    }
-
-    function removeArticle(index) {
-        let articles = JSON.parse(localStorage.getItem('articles')) || [];
-        articles.splice(index, 1);
-        localStorage.setItem('articles', JSON.stringify(articles));
-        window.location.reload(); // Refresh the page to update the UI
-    }
-     // Display company info
-     if (companyInfo) {
-                const companyInfoElement = document.getElementById('company-info');
+            // Update company info
+            if (companyInfo) {
+                const companyInfoElement = document.getElementById('company-info-details');
                 companyInfoElement.innerHTML = `
-                    <strong>${companyInfo.name}</strong><br>
-                    ${companyInfo.address}<br>
-                    ${companyInfo.phone}<br>
-                    ${companyInfo.email}
+                    <p><strong>${companyInfo.name}</strong></p>
+                    <p>${companyInfo.address}</p>
+                    <p>Phone: ${companyInfo.phone}</p>
+                    <p>Email: ${companyInfo.email}</p>
+                `;
+                
+                // Update copyright year and name
+                document.getElementById('copyright').textContent = 
+                    `© ${new Date().getFullYear()} ${companyInfo.name}, All rights reserved.`;
+            }
+
+            // Populate social media links
+            const socialMediaContainer = document.getElementById('social-media-links');
+            socialMediaContainer.innerHTML = "";
+            for (let key in socialLinks) {
+                const li = document.createElement('li');
+                const anchor = document.createElement('a');
+                anchor.href = socialLinks[key];
+                anchor.textContent = key.charAt(0).toUpperCase() + key.slice(1);
+                li.appendChild(anchor);
+                socialMediaContainer.appendChild(li);
+            }
+
+            // Display articles
+            const articlesContainer = document.getElementById('articles');
+            articlesContainer.innerHTML = "";
+            
+            if (articles.length > 0) {
+                articles.forEach((article, index) => {
+                    const articleElement = document.createElement('article');
+                    articleElement.className = 'article-card';
+                    articleElement.innerHTML = `
+                        <div class="article-image-container">
+                            <img src="${article.image || 'https://via.placeholder.com/400x200?text=No+Image'}" alt="${article.title}">
+                        </div>
+                        <div class="article-content">
+                            <h2 class="article-title">${article.title}</h2>
+                            <p class="article-text">${article.content.substring(0, 150)}${article.content.length > 150 ? '...' : ''}</p>
+                        </div>
+                    `;
+                    articlesContainer.appendChild(articleElement);
+                });
+            } else {
+                articlesContainer.innerHTML = `
+                    <div class="no-articles">
+                        <h2>No Articles Available</h2>
+                        <p>Check back later for updates or add new articles in the admin panel.</p>
+                    </div>
                 `;
             }
-</script>
+        }
 
+        function removeArticle(index) {
+            let articles = JSON.parse(localStorage.getItem('articles')) || [];
+            articles.splice(index, 1);
+            localStorage.setItem('articles', JSON.stringify(articles));
+            window.location.reload();
+        }
+    </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
