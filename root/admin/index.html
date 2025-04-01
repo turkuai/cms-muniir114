@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,15 +8,14 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            background-color: #f8f9fa;
             padding: 20px;
-            max-width: 900px;
-            margin: 0 auto;
+            margin: 0;
         }
 
         h1 {
             text-align: center;
-            color: #333;
+            color: #343a40;
         }
 
         .admin-section {
@@ -24,11 +24,6 @@
             margin-bottom: 20px;
             border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-
-        .admin-section h2 {
-            font-size: 1.5rem;
-            margin-bottom: 15px;
         }
 
         .admin-input {
@@ -53,8 +48,59 @@
         .save-button:hover {
             background-color: #45a049;
         }
+
+        .article-section {
+            margin-bottom: 30px;
+        }
+
+        .article-list {
+            margin-bottom: 10px;
+        }
+
+        .article-item {
+            margin-bottom: 10px;
+        }
+
+        .btn-remove {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        .btn-remove:hover {
+            background-color: #c82333;
+        }
+
+        .btn-edit {
+            background-color: #ffc107;
+            color: white;
+            border: none;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        .btn-edit:hover {
+            background-color: #e0a800;
+        }
+
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .social-media-container,
+        .article-container,
+        .company-info-container {
+            margin-top: 20px;
+        }
     </style>
 </head>
+
 <body>
 
     <h1>Admin Panel</h1>
@@ -63,7 +109,7 @@
     <div class="admin-section">
         <h2>Edit Logo URL</h2>
         <input id="logo-url" class="admin-input" type="text" placeholder="Enter logo URL">
-        <button type="button" onclick="updateLogo()">Update Logo</button>
+        <button type="button" class="save-button" onclick="updateLogo()">Update Logo</button>
     </div>
 
     <!-- Footer Note Edit Section -->
@@ -73,89 +119,230 @@
     </div>
 
     <!-- Social Media Links Edit Section -->
-    <div class="admin-section">
+    <div class="admin-section social-media-container">
         <h2>Edit Social Media Links</h2>
-        <label for="facebook-link">Facebook URL:</label>
-        <input type="text" id="facebook-link" class="admin-input" placeholder="Enter new Facebook URL">
-
-        <label for="linkedin-link">LinkedIn URL:</label>
-        <input type="text" id="linkedin-link" class="admin-input" placeholder="Enter new LinkedIn URL">
-
-        <label for="github-link">GitHub URL:</label>
-        <input type="text" id="github-link" class="admin-input" placeholder="Enter new GitHub URL">
-        
-        <button type="button" onclick="updateSocialLinks()">Update Links</button>
+        <div class="form-container">
+            <input type="text" id="social-name" class="admin-input" placeholder="Enter social media name (e.g. Facebook)">
+            <input type="text" id="social-url" class="admin-input" placeholder="Enter social media URL">
+            <button type="button" class="save-button" onclick="addSocialMedia()">Add Social Media</button>
+        </div>
+        <!-- List of Social Media Links -->
+        <h3>Existing Social Media Links</h3>
+        <div id="social-media-list"></div>
     </div>
 
-    <button class="save-button" onclick="saveChanges()">Save Changes</button>
+    <!-- Articles Section -->
+    <div class="admin-section article-container">
+        <h2>Edit Articles</h2>
+        <div class="form-container">
+            <input type="text" id="article-title" class="admin-input" placeholder="Enter article title">
+            <textarea id="article-content" class="admin-input" placeholder="Enter article content"></textarea>
+            <input type="text" id="article-image" class="admin-input" placeholder="Enter article image URL">
+            <button class="save-button" onclick="addArticle()">Add Article</button>
+        </div>
+        <h3>Existing Articles</h3>
+        <div id="article-list"></div>
+    </div>
+
+    <!-- Company Info Edit Section -->
+    <div class="admin-section company-info-container">
+        <h2>Edit Company Info</h2>
+        <div class="form-container">
+            <input id="company-name" class="admin-input" type="text" placeholder="Company Name">
+            <input id="company-address" class="admin-input" type="text" placeholder="Company Address">
+            <input id="company-phone" class="admin-input" type="text" placeholder="Phone Number">
+            <input id="company-email" class="admin-input" type="text" placeholder="Email">
+            <button class="save-button" onclick="saveCompanyInfo()">Save Company Info</button>
+        </div>
+    </div>
+
+    <!-- Save Changes Button -->
+    <button class="save-button" onclick="saveChanges()">Save All Changes</button>
 
     <script>
-        // Initialize the app with data from localStorage
+        // Load data from localStorage when the page loads
         function loadData() {
             const logoUrl = localStorage.getItem('logoUrl');
             const footerNote = localStorage.getItem('footerNote');
             const socialLinks = JSON.parse(localStorage.getItem('socialLinks')) || {};
-    
-            // Set the inputs with stored data
+            const articles = JSON.parse(localStorage.getItem('articles')) || [];
+
             if (logoUrl) {
                 document.getElementById('logo-url').value = logoUrl;
             }
-    
+
             if (footerNote) {
                 document.getElementById('footer-note').value = footerNote;
             }
-    
-            // Set social media links with stored values (if any)
+
             if (socialLinks) {
-                document.getElementById('facebook-link').value = socialLinks.facebook || '';
-                document.getElementById('linkedin-link').value = socialLinks.linkedin || '';
-                document.getElementById('github-link').value = socialLinks.github || '';
+                displaySocialMedia(socialLinks);
+            }
+
+            if (articles) {
+                displayArticles(articles);
             }
         }
-    
-        // Update only the changed social media links in localStorage
-        // Update the social media links in localStorage
-// Update the social media links in localStorage
-function updateSocialLinks() {
-    // Retrieve existing links or create a new object
-    let socialLinks = JSON.parse(localStorage.getItem('socialLinks')) || {};
 
-    // Get the current values for each social link
-    const facebookLink = document.getElementById('facebook-link').value;
-    const linkedinLink = document.getElementById('linkedin-link').value;
-    const githubLink = document.getElementById('github-link').value;
-
-    // Update all links
-    socialLinks.facebook = facebookLink;
-    socialLinks.linkedin = linkedinLink;
-    socialLinks.github = githubLink;
-
-    // Save the updated social links to localStorage
-    localStorage.setItem('socialLinks', JSON.stringify(socialLinks));
-
-    alert('Social Media Links updated!');
-}
-
-
-    
-        // Save other changes (like logo and footer note)
-        function saveChanges() {
-            const logoUrl = document.getElementById('logo-url').value;
-            const footerNote = document.getElementById('footer-note').value;
-    
-            localStorage.setItem('logoUrl', logoUrl);
-            localStorage.setItem('footerNote', footerNote);
-    
-            alert('Changes saved!');
+        // Display Social Media Links
+        function displaySocialMedia(socialLinks) {
+            const socialListContainer = document.getElementById('social-media-list');
+            socialListContainer.innerHTML = '';
+            Object.keys(socialLinks).forEach(name => {
+                const url = socialLinks[name];
+                const div = document.createElement('div');
+                div.innerHTML = ` 
+                    <p><strong>${name}</strong>: <a href="${url}" target="_blank">${url}</a> 
+                    <button class="btn-remove" onclick="removeSocialMedia('${name}')">Remove</button></p>
+                `;
+                socialListContainer.appendChild(div);
+            });
         }
+
+        // Remove Social Media Link
+        function removeSocialMedia(name) {
+            let socialLinks = JSON.parse(localStorage.getItem('socialLinks')) || {};
+            delete socialLinks[name]; // Remove the selected social media link by name
+            localStorage.setItem('socialLinks', JSON.stringify(socialLinks)); // Save back to localStorage
+            displaySocialMedia(socialLinks); // Update the display
+            alert(`${name} has been removed!`);
+        }
+
+        // Add Social Media Link
+        function addSocialMedia() {
+            const socialName = document.getElementById('social-name').value;
+            const socialUrl = document.getElementById('social-url').value;
+
+            if (!socialName || !socialUrl) {
+                alert('Please fill in both fields!');
+                return;
+            }
+
+            let socialLinks = JSON.parse(localStorage.getItem('socialLinks')) || {};
+            socialLinks[socialName] = socialUrl; // Add new social media link
+            localStorage.setItem('socialLinks', JSON.stringify(socialLinks)); // Save to localStorage
+
+            displaySocialMedia(socialLinks); // Update the display of social media links
+            alert('Social Media Link added!');
+        }
+
+        // Load and Display Articles
+        function loadArticles() {
+            const articles = JSON.parse(localStorage.getItem('articles')) || [];
+            const articleList = document.getElementById('article-list');
+            articleList.innerHTML = '';
+
+            articles.forEach((article, index) => {
+                const div = document.createElement('div');
+                div.classList.add('article-item');
+                div.innerHTML = `
+                    <h4>${article.title}</h4>
+                    <p>${article.content}</p>
+                    <img src="${article.image}" style="max-width: 100px;">
+                    <button class="btn-edit" onclick="editArticle(${index})">Edit</button>
+                    <button class="btn-remove" onclick="removeArticle(${index})">Remove</button>
+                `;
+                articleList.appendChild(div);
+            });
+        }
+
+        // Add New Article
+        function addArticle() {
+            const title = document.getElementById('article-title').value;
+            const content = document.getElementById('article-content').value;
+            const image = document.getElementById('article-image').value;
+            if (!title || !content || !image) return alert('Fill all fields!');
+
+            let articles = JSON.parse(localStorage.getItem('articles')) || [];
+            articles.push({ title, content, image });
+            localStorage.setItem('articles', JSON.stringify(articles));
+            loadArticles();
+        }
+
+        // Edit Article
+        function editArticle(index) {
+            let articles = JSON.parse(localStorage.getItem('articles')) || [];
+            const article = articles[index];
+            document.getElementById('article-title').value = article.title;
+            document.getElementById('article-content').value = article.content;
+            document.getElementById('article-image').value = article.image;
+
+            document.querySelector('button[onclick="addArticle()"').innerText = 'Update Article';
+            document.querySelector('button[onclick="addArticle()"').setAttribute('onclick', `updateArticle(${index})`);
+        }
+
+        // Update Article
+        function updateArticle(index) {
+            let articles = JSON.parse(localStorage.getItem('articles')) || [];
+            articles[index] = {
+                title: document.getElementById('article-title').value,
+                content: document.getElementById('article-content').value,
+                image: document.getElementById('article-image').value
+            };
+            localStorage.setItem('articles', JSON.stringify(articles));
+            loadArticles();
+            document.querySelector('button[onclick^="updateArticle"]').innerText = 'Add Article';
+            document.querySelector('button[onclick^="updateArticle"]').setAttribute('onclick', 'addArticle()');
+        }
+
+        // Remove Article
+        function removeArticle(index) {
+            let articles = JSON.parse(localStorage.getItem('articles')) || [];
+            articles.splice(index, 1);
+            localStorage.setItem('articles', JSON.stringify(articles));
+            loadArticles();
+        }
+
+      // Save Company Info
+    function saveCompanyInfo() {
+        const name = document.getElementById('company-name').value;
+        const address = document.getElementById('company-address').value;
+        const phone = document.getElementById('company-phone').value;
+        const email = document.getElementById('company-email').value;
+
+        const companyInfo = { name, address, phone, email };
+        localStorage.setItem('companyInfo', JSON.stringify(companyInfo));
+        console.log("Company Info Saved:", companyInfo); // Debugging Log
+        alert('Company Info Updated!');
+    }
+
+    // Save all changes like logo and footer note
+    function saveChanges() {
+        const logoUrl = document.getElementById('logo-url').value;
+        const footerNote = document.getElementById('footer-note').value;
+
+        localStorage.setItem('logoUrl', logoUrl);
+        localStorage.setItem('footerNote', footerNote);
+
+        console.log("Logo and Footer Saved:", { logoUrl, footerNote }); // Debugging Log
+        alert('Changes saved!');
+    }
+
+    // Load data from localStorage when the page loads
+    window.onload = function () {
+        const logoUrl = localStorage.getItem('logoUrl');
+        const footerNote = localStorage.getItem('footerNote');
+        const companyInfo = JSON.parse(localStorage.getItem('companyInfo'));
+
+        if (logoUrl) {
+            document.getElementById('logo-url').value = logoUrl;
+        }
+
+        if (footerNote) {
+            document.getElementById('footer-note').value = footerNote;
+        }
+
+        if (companyInfo) {
+            document.getElementById('company-name').value = companyInfo.name;
+            document.getElementById('company-address').value = companyInfo.address;
+            document.getElementById('company-phone').value = companyInfo.phone;
+            document.getElementById('company-email').value = companyInfo.email;
+        }
+
+        console.log("Loaded Data:", { logoUrl, footerNote, companyInfo }); // Debugging Log
     
-        // Load the data on page load
-        window.onload = function() {
-            loadData();
         }
     </script>
-        
-    
-
 </body>
+
 </html>

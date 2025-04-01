@@ -233,94 +233,111 @@ html>
         </nav>
     </header>
 
-    <!-- Main Content Section -->
+   
     <main>
-        <article>
-            <h2>smart solar panel</h2>
-            <div class="article-content">
-                <p>Smart solar energy systems stand at the forefront of innovation, driving a seismic shift in how we:</p>
-                <p>generate, store, and consume electricity. A traditional solar setup harnesses the sun’s energy using:</p>
-                <p>photovoltaic (PV) panels, converting sunlight into electricity that powers our homes and businesses.</p>
-            </div>
-            <div class="article-image">
-                <img src="https://sunbridgesolar.com/wp-content/uploads/2021/10/Smart-solar-energy-system-against-sunny-sky.jpg" alt="First Article Image">
-            </div>
-        </article>
-
-        <!-- Second Article -->
-        <article>
-            <h2>batteries storage</h2>
-            <div class="article-content">
-                <p>As the world embraces a renewable energy future, battery energy storage systems are poised to play a:</p>
-                <p>pivotal role in optimizing energy efficiency and sustainability.</p>
-            </div>
-            <div class="article-image">
-                <img src="https://www.fuergy.com/media/pages/home/a0b09467c8-1710783856/kontajner_software-9.webp" alt="Second Article Image">
-            </div>
-        </article>
+        <!-- Container for dynamically added articles -->
+        <div id="articles"></div>
     </main>
-
     
     <!-- Footer Section -->
-    <footer>
-        <div class="company-info">
-            <p id="footer-note">SmartEco</p>
-            <p>SmartEco Ltd<br>Address: Pelltarinkatu 2D Turku<br>Phone: 0234562454<br>Email: SmartEco@Smart.fi.com</p>
-            <p>&copy; 2025 SmartEco  All rights reserved.</p>
-        </div>
+   <!-- Footer Section -->
+<footer>
+    <div class="company-info">
+        <p id="footer-note">SmartEco</p>
+        <p>SmartEco Ltd<br>Address: Pelltarinkatu 2D Turku<br>Phone: 0234562454<br>Email: SmartEco@Smart.fi.com</p>
+        <p>&copy; 2025 SmartEco  All rights reserved.</p>
+    </div>
 
-        <!-- Navigation links for Home, About, Blog, Social Media -->
-        <nav>
-            <ul>
-                <li><a href="#home">HOME</a></li>
-                <li><a href="#about">ABOUT</a></li>
-                <li><a href="#blog">BLOG</a></li>
-            </ul>
-            <ul id="social-media-links">
-                <li><a href="https://www.facebook.com/login/?next=https%3A%2F%2Fwww.facebook.com%2F%3Flocale%3Dfi_FI">Facebook</a></li>
-                <li><a href="https://www.linkedin.com/">LinkedIn</a></li>
-                <li><a href="https://github.com/turkuai/cms-muniir114">GitHub</a></li>
-            </ul>
-        </nav>
-    </footer>
-    <script>
-        // Load data from localStorage on page load
-      // Load data from localStorage on page load
-window.onload = function() {
-    const logoUrl = localStorage.getItem('logoUrl');
-    const footerNote = localStorage.getItem('footerNote');
-    const socialLinks = JSON.parse(localStorage.getItem('socialLinks')) || {};
+    <!-- Navigation links for Home, About, Blog -->
+    <nav>
+        <ul>
+            <li><a href="#home">HOME</a></li>
+            <li><a href="#about">ABOUT</a></li>
+            <li><a href="#blog">BLOG</a></li>
+        </ul>
+    </nav>
 
-    // Update the logo image if a logo URL exists
-    if (logoUrl) {
-        document.getElementById('logoImage').src = logoUrl;
+    <!-- Social Media Links -->
+    <nav>
+        <ul id="social-media-links">
+            <!-- Social media links will go here dynamically -->
+        </ul>
+    </nav>
+</footer>
+
+<script>
+    window.onload = function() {
+        const logoUrl = localStorage.getItem('logoUrl');
+        const footerNote = localStorage.getItem('footerNote');
+        if (footerNote) {
+            document.getElementById('footer-note').textContent = footerNote;
+        }
+        const socialLinks = JSON.parse(localStorage.getItem('socialLinks')) || {};
+        const articles = JSON.parse(localStorage.getItem('articles')) || [];
+
+        // Update the logo image if a logo URL exists
+        if (logoUrl) {
+            document.getElementById('logoImage').src = logoUrl;
+        }
+
+        // Update footer note
+        if (footerNote) {
+            document.getElementById('footer-note').textContent = footerNote;
+        }
+
+        // Populate social media links dynamically
+        const socialMediaContainer = document.getElementById('social-media-links');
+        socialMediaContainer.innerHTML = "";  // Clear existing links
+        for (let key in socialLinks) {
+            const li = document.createElement('li');
+            const anchor = document.createElement('a');
+            anchor.href = socialLinks[key];
+            anchor.textContent = key.charAt(0).toUpperCase() + key.slice(1);
+            li.appendChild(anchor);
+            socialMediaContainer.appendChild(li);
+        }
+
+        // Display articles dynamically
+        const articlesContainer = document.getElementById('articles');
+        articlesContainer.innerHTML = ""; // Clear existing articles
+        if (articles.length > 0) {
+            articles.forEach((article, index) => {
+                const articleElement = document.createElement('article');
+                articleElement.innerHTML = `
+                    <h2>${article.title}</h2>
+                    <div class="article-content">
+                        <p>${article.content}</p>
+                    </div>
+                    <div class="article-image">
+                        <img src="${article.image}" alt="${article.title}">
+                    </div>
+                    <button onclick="removeArticle(${index})"></button>
+                `;
+                articlesContainer.appendChild(articleElement);
+            });
+        } else {
+            articlesContainer.innerHTML = "<p>No articles available.</p>";
+        }
     }
 
-    // Update footer note (if needed)
-    if (footerNote) {
-        document.getElementById('footer-note').textContent = footerNote;
+    function removeArticle(index) {
+        let articles = JSON.parse(localStorage.getItem('articles')) || [];
+        articles.splice(index, 1);
+        localStorage.setItem('articles', JSON.stringify(articles));
+        window.location.reload(); // Refresh the page to update the UI
     }
+     // Display company info
+     if (companyInfo) {
+                const companyInfoElement = document.getElementById('company-info');
+                companyInfoElement.innerHTML = `
+                    <strong>${companyInfo.name}</strong><br>
+                    ${companyInfo.address}<br>
+                    ${companyInfo.phone}<br>
+                    ${companyInfo.email}
+                `;
+            }
+</script>
 
-    // Populate social media links dynamically
-    const socialMediaContainer = document.getElementById('social-media-links');
-    
-    // Clear the current links before updating
-    socialMediaContainer.innerHTML = "";
-
-    // Create and append updated links
-    const socialMediaKeys = ['facebook', 'linkedin', 'github'];
-    socialMediaKeys.forEach(key => {
-        const li = document.createElement('li');
-        const anchor = document.createElement('a');
-        anchor.href = socialLinks[key] || '';
-        anchor.textContent = key.charAt(0).toUpperCase() + key.slice(1); // Capitalize the first letter
-        li.appendChild(anchor);
-        socialMediaContainer.appendChild(li);
-    });
-}
-
-    </script>
-    
 </body>
 </html>
 
