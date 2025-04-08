@@ -1,0 +1,22 @@
+on:
+  push:
+    branches:
+      - main  # This triggers the action on push to the 'main' branch
+
+name: Deploy website on push
+
+jobs:
+  web-deploy:
+    name: Deploy
+    runs-on: ubuntu-latest  # The action will run on an Ubuntu runner
+
+    steps:
+    - name: Get latest code
+      uses: actions/checkout@v3  # This checks out your code from the repository
+
+    - name: Push files
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.4  # Use this action to deploy via FTP
+      with:
+        server: 194.197.245.5 # Replace with your FTP server address
+        username: 23n_2817  # Replace with your FTP username
+        password: ${{ secrets.ftp_password }}  # The FTP password is stored as a GitHub secret for security

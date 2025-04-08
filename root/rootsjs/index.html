@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CMS Example</title>
+    <style>
+        /* General Reset and Styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f4f4;
+            padding-top: 50px;
+        }
+
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: #333;
+            color: white;
+            padding: 15px 0;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        header .logo img {
+            width: 100px;
+            margin-left: 20px;
+        }
+
+        header nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: flex-end;
+            margin-right: 20px;
+        }
+
+        header nav ul li {
+            margin: 0 15px;
+            position: relative;
+        }
+
+        header nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+
+        header nav ul li a:hover {
+            color: #10e763;
+            transform: translateY(-5px);
+        }
+
+        /* Main Section Styling */
+        main {
+            margin-top: 100px;
+            padding: 20px;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Articles Grid Container */
+        .articles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        /* Article Card Styling */
+        .article-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .article-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .article-image-container {
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+        }
+
+        .article-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .article-card:hover .article-image-container img {
+            transform: scale(1.05);
+        }
+
+        .article-content {
+            padding: 20px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .article-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+
+        .article-text {
+            color: #555;
+            margin-bottom: 20px;
+            flex-grow: 1;
+        }
+
+        /* Footer Styling */
+        footer {
+            background: #333;
+            color: white;
+            padding: 40px 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            margin-top: 40px;
+        }
+
+        footer .company-info {
+            max-width: 48%;
+        }
+
+        footer .company-info p {
+            font-size: 1rem;
+            margin-bottom: 15px;
+        }
+
+        footer nav {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            gap: 20px;
+        }
+
+        footer nav ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        footer nav ul li {
+            margin: 10px 0;
+        }
+
+        footer nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        footer nav ul li a:hover {
+            color: #32ce1d;
+        }
+
+        footer p {
+            font-size: 0.9rem;
+            margin-top: 20px;
+            text-align: center;
+            width: 100%;
+        }
+
+        /* Social Media Link Styling */
+        #social-media-links {
+            list-style-type: none;
+            padding: 0;
+            margin-top: 20px;
+        }
+
+        #social-media-links li {
+            margin: 5px 0;
+        }
+
+        #social-media-links li a {
+            color: #ddd;
+            text-decoration: none;
+            font-size: 1rem;
+            transition: color 0.3s ease;
+        }
+
+        #social-media-links li a:hover {
+            color: #10e763;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .articles-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            footer {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            footer .company-info {
+                max-width: 100%;
+            }
+            
+            footer nav {
+                justify-content: flex-start;
+            }
+        }
+
+        /* No Articles Message */
+        .no-articles {
+            text-align: center;
+            padding: 40px;
+            background: white;
+            border-radius: 10px;
+            grid-column: 1 / -1;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <header>
+        <div class="logo">
+            <img id="logoImage" src="https://img.freepik.com/premium-vector/renewable-energy-symbol-with-leaf-thunder-light-shape-combination-concept_267160-735.jpg?w=360" alt="Company Logo">
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#home">HOME</a></li>
+                <li><a href="#about">ABOUT</a></li>
+                <li><a href="#blog">BLOG</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Container for dynamically added articles -->
+        <div id="articles" class="articles-grid"></div>
+    </main>
+    
+    <!-- Footer Section -->
+    <footer>
+        <div class="company-info">
+            <p id="footer-note"></p>
+            <div id="company-info-details"></div>
+            <p id="copyright">&copy; 2025 SmartEco All rights reserved.</p>
+        </div>
+
+        <!-- Navigation links for Home, About, Blog -->
+        <nav>
+            <ul>
+                <li><a href="#home">HOME</a></li>
+                <li><a href="#about">ABOUT</a></li>
+                <li><a href="#blog">BLOG</a></li>
+            </ul>
+        </nav>
+
+        <!-- Social Media Links -->
+        <nav>
+            <ul id="social-media-links"></ul>
+        </nav>
+    </footer>
+
+    <script>
+        window.onload = function() {
+            // Load all data from localStorage
+            const logoUrl = localStorage.getItem('logoUrl');
+            const footerNote = localStorage.getItem('footerNote');
+            const socialLinks = JSON.parse(localStorage.getItem('socialLinks')) || {};
+            const articles = JSON.parse(localStorage.getItem('articles')) || [];
+            const companyInfo = JSON.parse(localStorage.getItem('companyInfo'));
+
+            // Update logo
+            if (logoUrl) {
+                document.getElementById('logoImage').src = logoUrl;
+            }
+
+            // Update footer note
+            if (footerNote) {
+                document.getElementById('footer-note').textContent = footerNote;
+            }
+
+            // Update company info
+            if (companyInfo) {
+                const companyInfoElement = document.getElementById('company-info-details');
+                companyInfoElement.innerHTML = `
+                    <p><strong>${companyInfo.name}</strong></p>
+                    <p>${companyInfo.address}</p>
+                    <p>Phone: ${companyInfo.phone}</p>
+                    <p>Email: ${companyInfo.email}</p>
+                `;
+                
+                // Update copyright year and name
+                document.getElementById('copyright').textContent = 
+                    `© ${new Date().getFullYear()} ${companyInfo.name}, All rights reserved.`;
+            }
+
+            // Populate social media links
+            const socialMediaContainer = document.getElementById('social-media-links');
+            socialMediaContainer.innerHTML = "";
+            for (let key in socialLinks) {
+                const li = document.createElement('li');
+                const anchor = document.createElement('a');
+                anchor.href = socialLinks[key];
+                anchor.textContent = key.charAt(0).toUpperCase() + key.slice(1);
+                li.appendChild(anchor);
+                socialMediaContainer.appendChild(li);
+            }
+
+            // Display articles
+            const articlesContainer = document.getElementById('articles');
+            articlesContainer.innerHTML = "";
+            
+            if (articles.length > 0) {
+                articles.forEach((article, index) => {
+                    const articleElement = document.createElement('article');
+                    articleElement.className = 'article-card';
+                    articleElement.innerHTML = `
+                        <div class="article-image-container">
+                            <img src="${article.image || 'https://via.placeholder.com/400x200?text=No+Image'}" alt="${article.title}">
+                        </div>
+                        <div class="article-content">
+                            <h2 class="article-title">${article.title}</h2>
+                            <p class="article-text">${article.content.substring(0, 150)}${article.content.length > 150 ? '...' : ''}</p>
+                        </div>
+                    `;
+                    articlesContainer.appendChild(articleElement);
+                });
+            } else {
+                articlesContainer.innerHTML = `
+                    <div class="no-articles">
+                        <h2>No Articles Available</h2>
+                        <p>Check back later for updates or add new articles in the admin panel.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function removeArticle(index) {
+            let articles = JSON.parse(localStorage.getItem('articles')) || [];
+            articles.splice(index, 1);
+            localStorage.setItem('articles', JSON.stringify(articles));
+            window.location.reload();
+        }
+    </script>
+</body>
+</html>
