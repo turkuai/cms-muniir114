@@ -248,45 +248,52 @@ $companyInfo = getCompanyInfo();
 </head>
 <body>
     <!-- Header Section -->
-    <header>
-        <div class="logo">
-            <img id="logoImage" src="<?= htmlspecialchars($logoUrl) ?>" alt="Company Logo">
-        </div>
-        <nav>
-            <ul>
-                <li><a href="#home">HOME</a></li>
-                <li><a href="#about">ABOUT</a></li>
-                <li><a href="#blog">BLOG</a></li>
-            </ul>
-        </nav>
-    </header>
+    <!-- Header Section -->
+<header>
+    <div class="logo">
+        <img id="logoImage" src="<?= htmlspecialchars($logoUrl) ?>" alt="Company Logo">
+    </div>
+    <nav>
+        <ul>
+            <?php $menus = getAllMenus(); ?>
+            <?php foreach ($menus as $menu): ?>
+                <li><a href="<?= htmlspecialchars($menu['url']) ?>"><?= htmlspecialchars($menu['title']) ?></a></li>
+            <?php endforeach; ?>
+        </ul>
+    </nav>
+</header>
 
     <main>
         <!-- Container for dynamically added articles -->
         <div id="articles" class="articles-grid">
-            <?php if (!empty($articles)): ?>
-                <?php foreach ($articles as $article): ?>
-                    <article class="article-card">
-                        <div class="article-image-container">
-                            <img src="<?= htmlspecialchars($article['image_url'] ?: 'https://via.placeholder.com/400x200?text=No+Image') ?>" 
-                                 alt="<?= htmlspecialchars($article['title']) ?>">
-                        </div>
-                        <div class="article-content">
-                            <h2 class="article-title"><?= htmlspecialchars($article['title']) ?></h2>
-                            <p class="article-text">
-                                <?= htmlspecialchars(substr($article['content'], 0, 150)) ?>
-                                <?= strlen($article['content']) > 150 ? '...' : '' ?>
-                            </p>
-                        </div>
-                    </article>
-                <?php endforeach; ?>
-            <?php else: ?>
-                <div class="no-articles">
-                    <h2>No Articles Available</h2>
-                    <p>Check back later for updates or add new articles in the admin panel.</p>
-                </div>
-            <?php endif; ?>
-        </div>
+    <?php 
+    // Get homepage articles
+    // Replace your current article display code with this:
+$homepage_articles = getHomepageArticles();
+
+if (!empty($homepage_articles)): ?>
+    <?php foreach ($homepage_articles as $article): ?>
+        <article class="article-card">
+            <div class="article-image-container">
+                <img src="<?= htmlspecialchars($article['image_url'] ?: 'https://via.placeholder.com/400x200?text=No+Image') ?>" 
+                     alt="<?= htmlspecialchars($article['title']) ?>">
+            </div>
+            <div class="article-content">
+                <h2 class="article-title"><?= htmlspecialchars($article['title']) ?></h2>
+                <p class="article-text">
+                    <?= htmlspecialchars(substr($article['content'], 0, 150)) ?>
+                    <?= strlen($article['content']) > 150 ? '...' : '' ?>
+                </p>
+                <a href="article.php?id=<?= $article['id'] ?>" class="read-more">Read More</a>
+            </div>
+        </article>
+    <?php endforeach; ?>
+<?php else: ?>
+    <div class="no-articles">
+        <h2>No Articles Available</h2>
+        <p>Check back later for updates or add new articles in the admin panel.</p>
+    </div>
+<?php endif; ?>
     </main>
     
     <!-- Footer Section -->

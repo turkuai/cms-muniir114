@@ -26,15 +26,35 @@ CREATE TABLE IF NOT EXISTS social_media (
     UNIQUE KEY (platform_name)
 );
 
--- Table for articles
+-- ✅ First create articles table (to be referenced later)
 CREATE TABLE IF NOT EXISTS articles (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     content TEXT NOT NULL,
     image_url VARCHAR(255),
+    display_location ENUM('home', 'menu') DEFAULT 'home',
+    menu_id INT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    -- No foreign key here yet because menus doesn't exist yet
 );
+
+-- ✅ Now create menus table that can reference articles
+CREATE TABLE IF NOT EXISTS menus (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    url VARCHAR(255) NOT NULL,
+    is_article TINYINT(1) DEFAULT 0,
+    article_id INT NULL,
+    display_order INT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (article_id) REFERENCES articles(id) ON DELETE SET NULL
+);
+
+-- ✅ Now we can alter articles to add a foreign key to menus (circular ref handled here)
+ALTER TABLE articles
+ADD CONSTRAINT fk_articles_menu_id FOREIGN KEY (menu_id) REFERENCES menus(id) ON DELETE SET NULL;
 
 -- Table for company information
 CREATE TABLE IF NOT EXISTS company_info (

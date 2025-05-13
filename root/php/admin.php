@@ -2,6 +2,7 @@
 require_once 'functions.php';
 
 // Handle form submissions
+// Handle form submissions
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['action'])) {
         switch ($_POST['action']) {
@@ -17,9 +18,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             case 'delete_social':
                 deleteSocialMedia($_POST['platform_name']);
                 break;
-            case 'add_article':
-                addArticle($_POST['article_title'], $_POST['article_content'], $_POST['article_image']);
-                break;
+                case 'add_article':
+                    $display_location = $_POST['display_location'] ?? 'home';
+                    $menu_id = ($display_location === 'menu') ? $_POST['menu_id'] : null;
+                    addArticle(
+                        $_POST['article_title'],
+                        $_POST['article_content'],
+                        $_POST['article_image'],
+                        $display_location,
+                        $menu_id
+                    );
+                    break;
+                
             case 'update_article':
                 updateArticle($_POST['article_id'], $_POST['article_title'], $_POST['article_content'], $_POST['article_image']);
                 break;
@@ -29,7 +39,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             case 'update_company':
                 updateCompanyInfo($_POST['company_name'], $_POST['company_address'], $_POST['company_phone'], $_POST['company_email']);
                 break;
+
+            // ✅ Add these cases for menus:
+            case 'add_menu':
+                addMenu($_POST['menu_title'], $_POST['menu_url'], isset($_POST['is_article']) ? 1 : 0, $_POST['menu_order']);
+                break;
+            case 'update_menu':
+                updateMenu($_POST['menu_id'], $_POST['menu_title'], $_POST['menu_url'], isset($_POST['is_article']) ? 1 : 0, $_POST['menu_order']);
+                break;
+            case 'delete_menu':
+                deleteMenu($_POST['menu_id']);
+                break;
         }
+    
         // Redirect to avoid form resubmission
         header("Location: admin.php");
         exit();
@@ -509,26 +531,50 @@ $companyInfo = getCompanyInfo();
             <div class="card-header">
                 <h3><i>📰</i> Articles Management</h3>
             </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6">
-                        <form method="POST" action="admin.php">
-                            <input type="hidden" name="action" value="add_article">
-                            <div class="form-group">
-                                <label for="article-title" class="form-label">Article Title</label>
-                                <input type="text" id="article-title" name="article_title" class="form-control" placeholder="Enter title">
-                            </div>
-                            <div class="form-group">
-                                <label for="article-content" class="form-label">Content</label>
-                                <textarea id="article-content" name="article_content" class="form-control" placeholder="Enter content"></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label for="article-image" class="form-label">Image URL</label>
-                                <input type="text" id="article-image" name="article_image" class="form-control" placeholder="Enter image URL">
-                            </div>
-                            <button type="submit" class="btn btn-success">Add Article</button>
-                        </form>
-                    </div>
+           <!-- Replace your current article form with this -->
+<form method="POST" action="admin.php">
+    <input type="hidden" name="action" value="add_article">
+    <div class="form-group">
+        <label for="article-title" class="form-label">Article Title</label>
+        <input type="text" id="article-title" name="article_title" class="form-control" placeholder="Enter title" required>
+    </div>
+    <div class="form-group">
+        <label for="article-content" class="form-label">Content</label>
+        <textarea id="article-content" name="article_content" class="form-control" placeholder="Enter content" required></textarea>
+    </div>
+    <div class="form-group">
+        <label for="article-image" class="form-label">Image URL</label>
+        <input type="text" id="article-image" name="article_image" class="form-control" placeholder="Enter image URL">
+    </div>
+    
+    <!-- Display location selection -->
+    <div class="form-group">
+        <label class="form-label">Display Location</label>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="display_location" id="display-home" value="home" checked 
+                   onchange="toggleMenuSelection(false)">
+            <label class="form-check-label" for="display-home">Homepage</label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="display_location" id="display-menu" value="menu"
+                   onchange="toggleMenuSelection(true)">
+            <label class="form-check-label" for="display-menu">Specific Menu</label>
+        </div>
+    </div>
+    
+    <!-- Menu selection (hidden by default) -->
+    <div class="form-group" id="menu-selection-group" style="display:none;">
+        <label for="menu-id" class="form-label">Select Menu</label>
+        <select id="menu-id" name="menu_id" class="form-control">
+            <?php foreach (getAllMenus() as $menu): ?>
+                <option value="<?= $menu['id'] ?>"><?= htmlspecialchars($menu['title']) ?></option>
+            <?php endforeach; ?>
+        </select>
+    </div>
+    
+    <button type="submit" class="btn btn-success">Add Article</button>
+</form>
+
                     <div class="col-md-6">
                         <h4>Existing Articles</h4>
                         <div id="article-list" class="mt-3">
@@ -566,6 +612,80 @@ $companyInfo = getCompanyInfo();
                 </div>
             </div>
         </div>
+        <!-- In the sidebar navigation -->
+<li><a href="#menus"><i>📋</i> Menu Management</a></li>
+
+<!-- In the main content -->
+<div class="card mb-4" id="menus-card">
+    <div class="card-header">
+        <h3><i>📋</i> Menu Management</h3>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <form method="POST" action="admin.php">
+                    <input type="hidden" name="action" value="add_menu">
+                    <div class="form-group">
+                        <label for="menu-title" class="form-label">Menu Title</label>
+                        <input type="text" id="menu-title" name="menu_title" class="form-control" placeholder="Enter menu title">
+                    </div>
+                    <div class="form-group">
+                        <label for="menu-url" class="form-label">URL</label>
+                        <input type="text" id="menu-url" name="menu_url" class="form-control" placeholder="Enter URL or article slug">
+                    </div>
+                    <div class="form-group">
+                        <label for="menu-order" class="form-label">Display Order</label>
+                        <input type="number" id="menu-order" name="menu_order" class="form-control" placeholder="Enter display order">
+                    </div>
+                    <div class="form-group form-check">
+                        <input type="checkbox" id="is-article" name="is_article" class="form-check-input">
+                        <label for="is-article" class="form-check-label">Is this an article page?</label>
+                    </div>
+                    <button type="submit" class="btn btn-success">Add Menu Item</button>
+                </form>
+            </div>
+            <div class="col-md-6">
+                <h4>Current Menu Items</h4>
+                <div id="menu-list" class="mt-3">
+                    <?php $menus = getAllMenus(); ?>
+                    <?php if (empty($menus)): ?>
+                        <div class="alert alert-info">No menu items added yet.</div>
+                    <?php else: ?>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>URL</th>
+                                    <th>Type</th>
+                                    <th>Order</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($menus as $menu): ?>
+                                <tr>
+                                    <td><?= htmlspecialchars($menu['title']) ?></td>
+                                    <td><?= htmlspecialchars($menu['url']) ?></td>
+                                    <td><?= $menu['is_article'] ? 'Article' : 'Link' ?></td>
+                                    <td><?= $menu['display_order'] ?></td>
+                                    <td>
+                                        <a href="edit_menu.php?id=<?= $menu['id'] ?>" class="btn btn-warning btn-sm">Edit</a>
+                                        <form method="POST" action="admin.php" style="display: inline;">
+                                            <input type="hidden" name="action" value="delete_menu">
+                                            <input type="hidden" name="menu_id" value="<?= $menu['id'] ?>">
+                                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
         <!-- Company Info Card -->
         <div class="card" id="company-card">
@@ -635,6 +755,14 @@ $companyInfo = getCompanyInfo();
                 showAlert(urlParams.get('success'), 'success');
             }
         };
+        function toggleMenuSelection(show) {
+    document.getElementById('menu-selection-group').style.display = show ? 'block' : 'none';
+    if (show) {
+        document.getElementById('menu-id').required = true;
+    } else {
+        document.getElementById('menu-id').required = false;
+    }
+}
     </script>
 </body>
 </html>
